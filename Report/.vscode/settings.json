@@ -1,0 +1,33 @@
+{
+    "latex-workshop.latex.tools": [
+        {
+            "name": "tectonic",
+            "command": "C:\\Users\\Diego\\.local\\bin\\tectonic.exe",
+            "args": [
+                "%DOC%.tex"
+            ],
+            "env": {}
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "tectonic",
+            "tools": [
+                "tectonic"
+            ]
+        }
+    ],
+    "latex-workshop.latex.autoBuild.run": "never",
+    "latex-workshop.view.pdf.viewer": "tab",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/c:\\Users\\Diego\\OneDrive - Estudiantes ITCR\\TEC\\Trabajo Final de Grado\\TFG Project\\main.aux": true,
+        "**/c:\\Users\\Diego\\OneDrive - Estudiantes ITCR\\TEC\\Trabajo Final de Grado\\TFG Project\\main.log": true,
+        "**/c:\\Users\\Diego\\OneDrive - Estudiantes ITCR\\TEC\\Trabajo Final de Grado\\TFG Project\\main.gz": true,
+        "**/c:\\Users\\Diego\\OneDrive - Estudiantes ITCR\\TEC\\Trabajo Final de Grado\\TFG Project\\main.out": true
+    }
+}

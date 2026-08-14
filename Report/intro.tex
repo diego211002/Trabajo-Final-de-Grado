@@ -1,0 +1,98 @@
+%% ---------------------------------------------------------------------------
+%% intro.tex
+%%
+%% Introduction
+%%
+%% $Id: intro.tex 1477 2010-07-28 21:34:43Z palvarado $
+%% ---------------------------------------------------------------------------
+
+\chapter{Introducción}
+\label{chp:intro}
+
+\section{Contexto}
+
+El presente proyecto se enmarca en el proyecto HAERA (Hybrid AERial Aquatic robotic system for sampling, monitoring and intervention) de la Universidad de Sevilla, 
+que busca avanzar hacia un sistema robótico híbrido aéreo-acuático para muestreo, monitorización e intervención ambiental\cite{Cite2}. Se desarrolla de forma presencial en la 
+Escuela Técnica Superior de Ingeniería (ETSI) de dicha universidad \cite{Cite1}, bajo la asesoría de profesores-tutores del Departamento de Ingeniería de Sistemas y Automática, 
+en colaboración con el grupo de investigación Multi-Robot and Control Systems (MACS)\cite{Cite3}, especializado en cooperación multi-robot, planificación y control de robots, 
+y control no lineal, robusto y adaptativo, con experiencia previa en proyectos multi-robot internacionales y nacionales orientados a aplicaciones medioambientales 
+y de inspección.
+
+Para su ejecución, la ETSI dispone de las instalaciones de laboratorio del grupo MACS, que proveen el equipamiento y los recursos necesarios para la integración y 
+validación de los sistemas desarrollados, entre ellos las plataformas USV (Unmanned Surface Vehicles) base sobre las que se construye la solución \cite{Cite3}. Las pruebas de 
+campo se realizan en cuerpos de agua cercanos a la ciudad de Sevilla, entorno natural para la validación del sistema bajo condiciones reales de operación.
+
+\newpage
+
+\section{Descripción del Problema}
+
+La contaminación de ríos, lagos y océanos, originada por asentamientos humanos, actividades agrícolas e industriales, continúa degradando los ecosistemas acuáticos 
+sin que existan, en la mayoría de los casos, herramientas fiables para su monitorización en tiempo real. Esta carencia adquiere especial relevancia considerando que 
+más de un tercio de la población mundial carece de acceso a saneamiento mejorado, lo que refuerza la necesidad de datos ambientales de calidad para respaldar la 
+gestión de recursos hídricos y la detección temprana de contaminantes\cite{Cite5}.
+
+La ausencia de mecanismos de monitorización sostenida y en tiempo real tiene consecuencias directas sobre la salud de los ecosistemas acuáticos: sin un monitoreo 
+adecuado a escala, el daño ambiental resultante puede volverse permanente e irreversible, mientras los cuerpos de agua continúan actuando como sumidero y conducto de 
+contaminación antropogénica sin que se generen los datos necesarios para intervenir a tiempo \cite{Cite6}. Esta limitación retrasa la identificación temprana de contaminantes 
+y reduce la capacidad de los organismos responsables para tomar decisiones de gestión basadas en información actualizada.
+
+Los sistemas robóticos disponibles actualmente para atender esta necesidad presentan limitaciones documentadas. Los drones aéreos, si bien permiten cubrir grandes 
+áreas, alcanzan tasas de éxito de muestreo de entre el 60 {\%} y el 83 {\%} debido a su incapacidad de interactuar directamente con el agua \cite{Cite4}. Por su parte, los vehículos 
+aéreo-acuáticos híbridos existentes presentan un tamaño considerable, un costo elevado y una maniobrabilidad reducida, lo que restringe su aplicabilidad en cuerpos de 
+agua de difícil acceso. Estas limitaciones evidencian un vacío en la literatura respecto a plataformas multi-robot validadas en condiciones acuáticas no controladas\cite{Cite2}.
+
+\section{Síntesis del Problema}
+
+En el marco del proyecto HAERA, se dispone de plataformas USV base desarrolladas en el laboratorio. Sin embargo, estas carecen de los subsistemas necesarios para operar 
+como una flota autónoma orientada a la monitorización y el muestreo de datos en entornos acuáticos reales, limitación documentada como un vacío en plataformas multi-robot 
+validadas en condiciones no controladas \cite{Cite2}. Del análisis de las causas asociadas a esta limitación se priorizaron tres causas críticas: la falta de algoritmos de navegación 
+autónoma por "waypoints" integrados en la flota, la ausencia de sensores de percepción específicos para misiones de monitorización ambiental acuática, y la falta de 
+integración de las plataformas USV base con hardware embarcado modular. Estas tres causas constituyen el eje sobre el cual se estructuran los objetivos del presente proyecto.
+
+El desarrollo del proyecto se enmarca en un periodo de ejecución limitado, condicionado a la adaptación de las plataformas USV ya disponibles en el laboratorio, a la 
+variabilidad ambiental de los cuerpos de agua cercanos a Sevilla y al cumplimiento de la normativa española aplicable. Como supuesto crítico, se asume que dichas plataformas 
+son adaptables a la integración requerida y que la infraestructura del laboratorio del grupo MACS estará disponible durante toda la ejecución.
+
+Resolver esta limitación permitirá ampliar la cobertura espacial, aumentar la redundancia operativa y mejorar la fiabilidad del muestreo en cuerpos de agua reales. Los 
+datasets recolectados en condiciones reales constituirán además un recurso de alto valor para el grupo MACS y para grupos de investigación afines, sentando las bases para 
+que organismos de gestión ambiental e instituciones públicas dispongan a futuro de herramientas más confiables para la monitorización autónoma de cuerpos de agua.
+
+
+
+\section{Objetivos y estructura del documento}
+
+\index{objetivos}
+
+\subsection{Objetivo General}
+
+Diseñar un sistema multi-USV autónomo que permita ejecutar misiones cooperativas de recolección de datos ambientales en entornos acuáticos.
+
+\subsection{Objetivos Específicos}
+
+\begin{itemize}
+    \item Analizar el estado actual de las plataformas USV del laboratorio del grupo MACS para definir los requerimientos oficiales del sistema multi-USV.
+    \item Diseñar la arquitectura de integración del hardware embarcado y de los sensores de percepción en al menos dos USVs para habilitar la operación autónoma 
+          estable de la plataforma y la adquisición continua de datos ambientales en condiciones controladas de laboratorio.
+    \item Implementar la arquitectura de comunicaciones y navegación autónoma cooperativa de la flota multi-USV para habilitar la coordinación simultánea de al menos dos vehículos.
+    \item Evaluar el desempeño cooperativo de la flota multi-USV mediante pruebas de integración en un entorno de simulación y en el laboratorio del grupo MACS.
+\end{itemize}
+
+\newpage
+
+\subsection{Estructura del documento}
+
+A continuación, se presenta un esquema de las secciones que conforman este documento, junto con una breve descripción de su contenido.
+
+\begin{itemize}
+    \item Capítulo 1: Se introduce el contexto del proyecto, definiendo el problema a resolver y los objetivos planteados.
+    \item Capítulo 2: Se presenta el marco teórico, con los conceptos fundamentales relevantes para el diseño e implementación del sistema multi-USV.
+    \item Capítulo 3: Se expone la metodología de diseño empleada, justificando los procedimientos seguidos para la selección de las alternativas técnicas del sistema.
+    \item Capítulo 4: Se detalla la propuesta de diseño, documentando la arquitectura del sistema multi-USV y la integración de sus subsistemas.
+    \item Capítulo 5: Se presentan y analizan los resultados obtenidos en las pruebas de validación en simulación y en laboratorio, junto con el análisis económico del proyecto.
+    \item Capítulo 6: Se presentan las conclusiones y recomendaciones derivadas del desarrollo del proyecto.
+
+\end{itemize}
+
+El principal aporte de ingeniería de este proyecto radica en la integración y validación de una arquitectura multi-USV autónoma y cooperativa, donde se combinan 
+hardware embarcado, sensores de percepción, comunicaciones inalámbricas y navegación por "waypoints" sobre plataformas acuáticas reales, contribuyendo a cerrar el 
+vacío identificado en la literatura respecto a sistemas multi-robot validados en condiciones acuáticas no controladas.
