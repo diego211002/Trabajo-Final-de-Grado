@@ -11,20 +11,25 @@
 
 \section{Contexto}
 
+
 El presente proyecto se enmarca en el proyecto HAERA (Hybrid AERial Aquatic robotic system for sampling, monitoring and intervention) de la Universidad de Sevilla, 
-que busca avanzar hacia un sistema robótico híbrido aéreo-acuático para muestreo, monitorización e intervención ambiental\cite{Cite2}. Se desarrolla de forma presencial en la 
+que busca avanzar hacia un sistema robótico híbrido aéreo-acuático para muestreo, monitorización e intervención ambiental\cite{Cite2}. 
+
+Se desarrolla de forma presencial en la 
 Escuela Técnica Superior de Ingeniería (ETSI) de dicha universidad \cite{Cite1}, bajo la asesoría de profesores-tutores del Departamento de Ingeniería de Sistemas y Automática, 
 en colaboración con el grupo de investigación Multi-Robot and Control Systems (MACS)\cite{Cite3}, especializado en cooperación multi-robot, planificación y control de robots, 
-y control no lineal, robusto y adaptativo, con experiencia previa en proyectos multi-robot internacionales y nacionales orientados a aplicaciones medioambientales 
-y de inspección.
+y control no lineal, robusto y adaptativo. Sus investigadores cuentan con amplia experiencia en proyectos de investigación multi-robot internacionales, como MULTIDRONE, 
+DURABLE y MBZIRC, y nacionales, como HAERA, COBUILD y SOLDRONE, orientados a aplicaciones medioambientales y de inspección \cite{Cite3}.
 
 Para su ejecución, la ETSI dispone de las instalaciones de laboratorio del grupo MACS, que proveen el equipamiento y los recursos necesarios para la integración y 
-validación de los sistemas desarrollados, entre ellos las plataformas USV (Unmanned Surface Vehicles) base sobre las que se construye la solución \cite{Cite3}. Las pruebas de 
-campo se realizan en cuerpos de agua cercanos a la ciudad de Sevilla, entorno natural para la validación del sistema bajo condiciones reales de operación.
+validación de los sistemas desarrollados, entre ellos las plataformas USV (Unmanned Surface Vehicles) base sobre las que se construye la solución \cite{Cite3}. Estas 
+instalaciones cuentan además con instrumentación de laboratorio para pruebas funcionales y calibración, así como herramientas de software y simulación para el desarrollo 
+y verificación de algoritmos de navegación \cite{Cite3}. Las pruebas de campo se realizan en cuerpos de agua cercanos a la ciudad de Sevilla, entorno natural para la 
+validación del sistema bajo condiciones reales de operación.
 
 \newpage
 
-\section{Descripción del Problema}
+\section{Descripción del problema}
 
 La contaminación de ríos, lagos y océanos, originada por asentamientos humanos, actividades agrícolas e industriales, continúa degradando los ecosistemas acuáticos 
 sin que existan, en la mayoría de los casos, herramientas fiables para su monitorización en tiempo real. Esta carencia adquiere especial relevancia considerando que 
@@ -41,33 +46,23 @@ Los sistemas robóticos disponibles actualmente para atender esta necesidad pres
 aéreo-acuáticos híbridos existentes presentan un tamaño considerable, un costo elevado y una maniobrabilidad reducida, lo que restringe su aplicabilidad en cuerpos de 
 agua de difícil acceso. Estas limitaciones evidencian un vacío en la literatura respecto a plataformas multi-robot validadas en condiciones acuáticas no controladas\cite{Cite2}.
 
-\section{Síntesis del Problema}
+\section{Síntesis del problema}
 
 En el marco del proyecto HAERA, se dispone de plataformas USV base desarrolladas en el laboratorio. Sin embargo, estas carecen de los subsistemas necesarios para operar 
-como una flota autónoma orientada a la monitorización y el muestreo de datos en entornos acuáticos reales, limitación documentada como un vacío en plataformas multi-robot 
-validadas en condiciones no controladas \cite{Cite2}. Del análisis de las causas asociadas a esta limitación se priorizaron tres causas críticas: la falta de algoritmos de navegación 
-autónoma por "waypoints" integrados en la flota, la ausencia de sensores de percepción específicos para misiones de monitorización ambiental acuática, y la falta de 
+como una flota autónoma orientada a la monitorización y el muestreo de datos en entornos acuáticos reales \cite{Cite2}. Del análisis de las causas asociadas a esta limitación se priorizaron tres causas críticas: la falta de algoritmos de navegación 
+autónoma por \enquote{waypoints} integrados en la flota, la ausencia de sensores de percepción específicos para misiones de monitorización ambiental acuática, y la falta de 
 integración de las plataformas USV base con hardware embarcado modular. Estas tres causas constituyen el eje sobre el cual se estructuran los objetivos del presente proyecto.
-
-El desarrollo del proyecto se enmarca en un periodo de ejecución limitado, condicionado a la adaptación de las plataformas USV ya disponibles en el laboratorio, a la 
-variabilidad ambiental de los cuerpos de agua cercanos a Sevilla y al cumplimiento de la normativa española aplicable. Como supuesto crítico, se asume que dichas plataformas 
-son adaptables a la integración requerida y que la infraestructura del laboratorio del grupo MACS estará disponible durante toda la ejecución.
-
-Resolver esta limitación permitirá ampliar la cobertura espacial, aumentar la redundancia operativa y mejorar la fiabilidad del muestreo en cuerpos de agua reales. Los 
-datasets recolectados en condiciones reales constituirán además un recurso de alto valor para el grupo MACS y para grupos de investigación afines, sentando las bases para 
-que organismos de gestión ambiental e instituciones públicas dispongan a futuro de herramientas más confiables para la monitorización autónoma de cuerpos de agua.
-
 
 
 \section{Objetivos y estructura del documento}
 
 \index{objetivos}
 
-\subsection{Objetivo General}
+\subsection{Objetivo general}
 
 Diseñar un sistema multi-USV autónomo que permita ejecutar misiones cooperativas de recolección de datos ambientales en entornos acuáticos.
 
-\subsection{Objetivos Específicos}
+\subsection{Objetivos específicos}
 
 \begin{itemize}
     \item Analizar el estado actual de las plataformas USV del laboratorio del grupo MACS para definir los requerimientos oficiales del sistema multi-USV.
@@ -90,9 +85,16 @@ A continuación, se presenta un esquema de las secciones que conforman este docu
     \item Capítulo 4: Se detalla la propuesta de diseño, documentando la arquitectura del sistema multi-USV y la integración de sus subsistemas.
     \item Capítulo 5: Se presentan y analizan los resultados obtenidos en las pruebas de validación en simulación y en laboratorio, junto con el análisis económico del proyecto.
     \item Capítulo 6: Se presentan las conclusiones y recomendaciones derivadas del desarrollo del proyecto.
+    \item Capítulo 7: Se presentas los anexos y los apéndices que complementan la información del documento.
 
 \end{itemize}
 
+\subsection{Aporte de ingeniería del proyecto}
+
 El principal aporte de ingeniería de este proyecto radica en la integración y validación de una arquitectura multi-USV autónoma y cooperativa, donde se combinan 
-hardware embarcado, sensores de percepción, comunicaciones inalámbricas y navegación por "waypoints" sobre plataformas acuáticas reales, contribuyendo a cerrar el 
+hardware embarcado, sensores de percepción, comunicaciones inalámbricas y navegación por \enquote{waypoints} sobre plataformas acuáticas reales, contribuyendo a cerrar el 
 vacío identificado en la literatura respecto a sistemas multi-robot validados en condiciones acuáticas no controladas.
+
+Resolver esta limitación permitirá ampliar la cobertura espacial, aumentar la redundancia operativa y mejorar la fiabilidad del muestreo en cuerpos de agua reales. Los 
+datasets recolectados en condiciones reales constituirán además un recurso de alto valor para el grupo MACS y para grupos de investigación afines, sentando las bases para 
+que organismos de gestión ambiental e instituciones públicas dispongan a futuro de herramientas más confiables para la monitorización autónoma de cuerpos de agua.
