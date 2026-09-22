@@ -323,4 +323,159 @@ resume en la Figura \ref{fig:matriz}.
     \label{fig:matriz}
 
 \end{figure}
-    
+
+\subsection{Selección del concepto ganador}
+
+Siguiendo la metodología de conceptualización presentada en el curso, basada en el proceso
+de generación de conceptos de Ulrich y Eppinger, la primera etapa consiste en dividir el
+problema de diseño en subproblemas más manejables mediante una descomposición funcional.
+Este proceso parte de una caja negra que define, de forma tentativa, las entradas y salidas de
+energía, material e información del sistema, y continúa de manera iterativa y piramidal hasta
+obtener subfunciones que puedan abordarse de manera independiente.
+
+En este proyecto, se tiene la Figura \ref{fig:caja-negra}, que a partir de ella se obtuvo la 
+descomposición funcional de primer nivel en la Figura \ref{fig:descomposicion-funcional}, que organiza las subfunciones del
+sistema en dos flujos: uno de energía y estructura, y otro de información y control. De las
+once subfunciones identificadas, tres corresponden a elementos ya resueltos por la plataforma
+existente y no requieren un proceso de búsqueda de conceptos. Las ocho restantes sí
+lo requieren, y son el punto de partida de la búsqueda de conceptos, externa e interna, que se
+desarrolla en la siguiente sección.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig/caja_negra.png}
+    \caption{Caja negra del sistema a diseñar}
+    \label{fig:caja-negra}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig/descomposicion.png}
+    \caption{Descomposición funcional de primer nivel del sistema a diseñar}
+    \label{fig:descomposicion-funcional}
+\end{figure}
+
+\newpage
+
+Para cada subfunción que lo requiere, se realiza una búsqueda de conceptos por dos vías, la
+interna, que es a partir del conocimiento y la experiencia del equipo con la plataforma existente, y
+la externa, mediante literatura técnica y análisis comparativo de productos disponibles. En esta
+etapa no se aplica ningún filtro ni selección, ya que solo se busca generar el listado más exhaustivo
+posible de alternativas, que se evaluarán formalmente en la etapa de selección de conceptos.
+
+\subsubsection*{Recibir y ejecutar comandos}
+
+\begin{itemize}
+    \item \textbf{Pixhawk 6X} \\
+    \textit{Justificación:} Es el controlador de vuelo ya integrado y en uso en la plataforma USV
+    del grupo MACS, corriendo ArduPilot (ArduRover) sobre el stack ROS2/MAVROS ya definido.
+    Ofrece redundancia triple de IMU con dominios de sensores completamente aislados (buses y
+    alimentación separados) y soporte Ethernet nativo. Representa
+    además la opción de menor riesgo de integración, al no requerir cambios de firmware,
+    drivers ni configuración existente \cite{Cite14}. \\
+
+    \item \textbf{Pixhawk 6C} \\
+    \textit{Justificación:} Alternativa dentro de la misma familia y estándar Pixhawk, compatible
+    con ArduPilot 4.3+ y con el stack ya definido. Procesador STM32H743 a 480 MHz, redundancia
+    doble de IMU (ICM-42688-P + BMI088) con 34.6 g en carcasa plástica \cite{Cite14}. \\
+
+    \item \textbf{Pix32 v6} \\
+    \textit{Justificación:} Variante modular de la familia Pixhawk 6C, con controlador y placa
+    base separados y conectados por un conector de 100 pines. Mismo procesador STM32H743
+    a 480 MHz, redundancia doble de IMU, 36 g de peso (solo módulo
+    FC). Es la opción más económica y compacta de la familia Pixhawk-estándar
+    si se prioriza costo sobre redundancia \cite{Cite14} \cite{Cite15}. \\
+\end{itemize}
+
+\subsubsection*{Procesar datos de alto nivel (ordenador a bordo)}
+
+\begin{itemize}
+    \item \textbf{Raspberry Pi 4 (8 GB)} \\
+    \textit{Justificación:} SBC de bajo costo y bajo consumo (3--8 W), con
+    soporte nativo de ROS 2 en ARM64. Adecuado para bridging de sensores,
+    teleoperación y pipelines de percepción ligeros. No cuenta con acelerador de IA dedicado,
+    lo que limita el procesamiento denso de datos LIDAR/cámara en tiempo real y podría
+    comprometer el cumplimiento de M2 y M3 si el
+    pipeline de percepción resulta exigente \cite{Cite16}. \\
+
+    \item \textbf{Raspberry Pi 5 (8 GB)} \\
+    \textit{Justificación:} Mejora de CPU respecto al Pi 4 (Cortex-A76 a 2.4 GHz), mismo
+    ecosistema ARM64/ROS 2, con la opción de un Hailo-8L (AI Kit, 13 TOPS) para inferencia
+    ligera con consumo de 5--15 W. Sigue siendo limitado frente a
+    modelos de percepción pesados sin el kit adicional de IA \cite{Cite16}. \\
+
+    \item \textbf{Jetson Orin Nano 8 GB} \\
+    \textit{Justificación:} GPU Ampere de 1024 núcleos con 32 Tensor cores, hasta 67 TOPS
+    (INT8 disperso), con soporte nativo de Isaac ROS (cuVSLAM, Nvblox), con un consumo de 7--25 W. Es la opción
+    recomendada en la literatura consultada para cargas de percepción exigentes en robots
+    móviles \cite{Cite16}. \\
+
+    \item \textbf{Intel NUC 13 Pro} \\
+    \textit{Justificación:} Arquitectura x86 nativa, con mejor soporte de SDKs propietarios de
+    sensores (Ouster, Velodyne, ZED) y mayor rendimiento de un solo hilo para tareas de
+    planificación CPU-intensivas. Consumo considerablemente mayor (15--45 W) y requiere
+    alimentación de 19--20 V con conversor DC-DC adicional, lo que complica su integración en
+    el presupuesto energético del USV \cite{Cite16}. \\
+\end{itemize}
+
+\subsubsection*{Percibir el entorno}
+\begin{itemize}
+  \item \textbf{LIDAR SLAMTEC RPLIDAR A3} \\
+  \textit{Justificación:} LIDAR 2D de barrido 360°, alcance $\approx$25\,m, $\approx$170\,g y 
+  $\approx$\$300, con drivers ROS2 nativos y amplio uso en prototipado académico. Es la opción 
+  más económica y ligera, aunque su clasificación IP20 implica que carece de protección contra 
+  agua y polvo, por lo que en un USV requeriría una carcasa adicional \cite{Cite17}. \\
+
+  \item \textbf{LIDAR Livox Mid-360} \\
+  \textit{Justificación:} LIDAR 3D de campo de visión 360°$\times$59°, $\approx$265\,g, 
+  $\approx$\$749, con clasificación IP67 (resistente a agua y polvo) y soporte ROS2 maduro. 
+  Es considerado un estándar de facto para LIDAR 3D de bajo costo en robots móviles, y su 
+  hermeticidad lo hace naturalmente más adecuado para operación a la intemperie sobre agua que 
+  el RPLIDAR A3 \cite{Cite17}. \\
+
+  \item \textbf{Cámara USB estándar} \\
+  \textit{Justificación:} Cámara RGB convencional con conexión USB (clase UVC), compatible de 
+  forma nativa con el ordenador a bordo sin necesidad de drivers propietarios ni SDK adicional. 
+  Representa la opción más simple y económica para captura visual, aunque a diferencia de las 
+  cámaras de profundidad no provee directamente información de distancia; el modelo específico 
+  queda por definir según disponibilidad y requisitos de resolución/óptica del proyecto. Este concepto
+  queda referenciado de forma interna, debido a que el equipo de proyecto ya cuenta con experiencia previa 
+  en su integración y uso. 
+\end{itemize}
+
+\subsubsection*{Almacenar y registrar datos}
+\begin{itemize}
+  \item \textbf{Almacenamiento local en tarjeta microSD} \\
+  \textit{Justificación:} Medio de almacenamiento integrado de forma nativa en los ordenadores a 
+  bordo, sin hardware adicional ni consumo energético extra 
+  significativo. Es la opción más simple y económica, aunque limitada en velocidad de escritura 
+  sostenida y en ciclos de vida frente a escritura intensiva y continua de datos. Este concepto
+  queda referenciado de forma interna, debido a que el equipo de proyecto ya cuenta con experiencia previa 
+  en su integración y uso. 
+
+  \item \textbf{Almacenamiento en SSD externo vía USB 3.0} \\
+  \textit{Justificación:} Unidad de estado sólido conectada por USB 3.0, con mayor velocidad de 
+  escritura sostenida, mayor capacidad y mayor resistencia a ciclos de escritura que una microSD, 
+  a costa de consumo energético y espacio adicional. Es preferible cuando se planea registro 
+  continuo de datos de alta frecuencia (video, nubes de puntos LIDAR) durante misiones largas.
+  Este concepto queda referenciado de forma interna, debido a que el equipo de proyecto ya cuenta 
+  con experiencia previa en su integración y uso. 
+
+  \item \textbf{Registro con rosbag2 (formato SQLite3)} \\
+  \textit{Justificación:} Herramienta estándar de ROS2 para grabación y reproducción de datos de 
+  todos los tópicos del sistema, con almacenamiento por defecto en una base de datos SQLite3. Es 
+  la opción de menor esfuerzo de integración al trabajar de forma nativa con la arquitectura ROS2 
+  del proyecto, y permite reproducir misiones completas para depuración y análisis posterior \cite{Cite18}. \\
+
+
+  \item \textbf{Base de datos de series temporales (InfluxDB)} \\
+  \textit{Justificación:} Base de datos especializada en datos de series temporales (telemetría, 
+  sensores IoT, monitoreo en tiempo real), con consultas y agregaciones más eficientes que una 
+  base de datos genérica para este tipo de datos. Es una alternativa más robusta a rosbag2 cuando 
+  se prioriza la consulta estructurada de datos históricos sobre la reproducción exacta de 
+  sesiones ROS2, aunque añade complejidad de integración al no ser nativa de ROS2 \cite{Cite19}. \\
+
+\end{itemize}
+
+
+
