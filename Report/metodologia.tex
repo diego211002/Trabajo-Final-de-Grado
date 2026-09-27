@@ -60,7 +60,7 @@ cuantitativos de desempeño, es decir, criterios que solo pueden confirmarse med
 prueba explícito y trazable hasta el requisito que los originó. El Modelo en V provee esa 
 trazabilidad de forma nativa.
 
-El modelo se organiza en dos ramas \cite{Cite7} \cite{Cite8}\\:
+El modelo se organiza en dos ramas: \cite{Cite7} \cite{Cite8}\\
 
 Rama izquierda (especificación y diseño), de forma descendente:
 
@@ -90,7 +90,7 @@ V para una mejor referencia \cite{Cite8}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{fig/modelo_v.png}
-    \caption{Diagrama de flujo de la metodología en V}
+    \caption{Diagrama de flujo de la metodología en V \cite{Cite7} \cite{Cite8}\\}
     \label{fig:metodologia}
 
 \end{figure}
@@ -110,7 +110,7 @@ En este proyecto, la división del trabajo queda en que la metodología UE deter
 necesidades, métricas, especificaciones y la selección del concepto a implementar por cada uno 
 de los módulos funcionales del sistema. El  Modelo en V determina cómo se construye y cómo se 
 verifica lo seleccionado. El punto de entrega entre ambas metodologías es exactamente el concepto 
-seleccionado al final de la etapa 4 de UE, que se convierte en el "Requisitos del sistema" con el 
+seleccionado al final de la etapa 4 de UE, que se convierte en los "Requisitos del sistema" con el 
 que arranca la rama izquierda del Modelo en V.
 
 \newpage
@@ -215,8 +215,6 @@ constancia de ellas como trabajo futuro.
 \subsection{Lista de especificaciones del sistema}
 
 Seguidamente, se procede a delimitar las métricas según las necesidades del cliente identificadas.
-Antes de fijar valores objetivo, se investigaron los conceptos técnicos que determinan qué valores 
-son razonables para las métricas más críticas. 
 
 Antes de fijar valores objetivo, se investigaron los conceptos técnicos que determinan qué valores
 son razonables para las métricas más críticas, ya sea para fijar un valor objetivo cuando la
@@ -230,7 +228,7 @@ técnicamente alcanzable con la tecnología disponible.
     respalda 0.5 m como ideal de M4.
     \item Comunicación (M5, M8). Los radios RFD900x ya presentes en la plataforma alcanzan $\geq$40 km 
     en línea de vista y hasta 500 kbps, por lo que el ideal de M8 (1–2 km) es alcanzable con 
-    holgura. La latencia de M5 no está publicada en su hoja de datos, por lo que se medirá de forma
+    holgura. La latencia de M5 no está publicada en su hoja de datos, por lo que se mide de forma
     empírica \cite{Cite10}.
     \item Latencia de software (M3, M5). Un estudio que compara MAVROS–MAVLink frente a DDS 
     nativo en vehículos autónomos reporta diferencias de latencia del orden de cientos de microsegundos, 
@@ -281,7 +279,7 @@ M5 & 5 & Latencia de comunicación & 5 & s & $\leq$1 & $\leq$0.8 & Medida durant
 M6 & 1,3 & Tasa de éxito de misión & 5 & \% & $\geq$85 & $\geq$100 & Evaluada en al menos 3 pruebas de integración independientes, con al menos 2 puntos de muestreo por USV por misión; documentada en el reporte de análisis de resultados. \\ \hline
 M7 & 4 & Peso de componentes añadidos & 5 & kg & $\leq$5 & $\leq$4 & Pesaje físico de todos los componentes antes de integración. \\ \hline
 M8 & 5 & Alcance de comunicación & 5 & m & $\geq$100 & $\geq$1000 & Pruebas de campo a distancia creciente hasta pérdida de enlace. \\ \hline
-M9 & 2,7 & Frecuencia de imágenes & 2 & Hz & $\approx$1 & $\approx$2 & Marca de tiempo de los cuadros capturados. \\ \hline
+M9 & 2,7 & Frecuencia de captura de imágenes & 2 & Hz & $\approx$1 & $\approx$2 & Marca de tiempo de los cuadros capturados. \\ \hline
 M10 & 6 & Número de mecanismos de recuperación & 5 & \# & $\geq$3 & $\geq$4 & Desconexión intencional de cada canal, confirmando la conmutación (\textit{failover}). \\ \hline
 M11 & 4 & Modificación del casco y Estabilidad (GM) & 5 & Bin. & Sí & No & Inspección del casco tras la integración y cálculo de altura metacéntrica (GM) del casco cargado vs.\ vacío.\\ \hline
 M12 & 4 & Accesibilidad de conectores & 4 & Bin. & Sí & Sí & Verificación de acceso físico sin desmontaje mayor. \\ \hline
@@ -290,7 +288,6 @@ M12 & 4 & Accesibilidad de conectores & 4 & Bin. & Sí & Sí & Verificación de 
 \setlength{\tabcolsep}{6pt}
 \normalsize
 
-De las métricas investigadas en esta etapa, la investigación cumplió dos propósitos distintos.
 Para M4 y M8, el valor objetivo ya había sido establecido directamente por el cliente durante
 la entrevista (Apéndice [A]). La investigación, en ambos casos, solo
 confirmó que la tecnología seleccionada puede alcanzarlo con holgura. Para M3 y M5, en
@@ -324,7 +321,9 @@ resume en la Figura \ref{fig:matriz}.
 
 \end{figure}
 
-\subsection{Selección del concepto ganador}
+\newpage
+
+\section{Selección del concepto ganador}
 
 Siguiendo la metodología de conceptualización presentada en el curso, basada en el proceso
 de generación de conceptos de Ulrich y Eppinger, la primera etapa consiste en dividir el
@@ -333,10 +332,10 @@ Este proceso parte de una caja negra que define, de forma tentativa, las entrada
 energía, material e información del sistema, y continúa de manera iterativa y piramidal hasta
 obtener subfunciones que puedan abordarse de manera independiente.
 
-En este proyecto, se tiene la Figura \ref{fig:caja-negra}, que a partir de ella se obtuvo la 
-descomposición funcional de primer nivel en la Figura \ref{fig:descomposicion-funcional}, que organiza las subfunciones del
+En este proyecto, se tiene la Figura \ref{fig:caja-negra}, a partir de la cual se obtuvo la descomposición 
+funcional de primer nivel en la Figura \ref{fig:descomposicion-funcional}, que organiza las subfunciones del
 sistema en dos flujos: uno de energía y estructura, y otro de información y control. De las
-once subfunciones identificadas, tres corresponden a elementos ya resueltos por la plataforma
+10 subfunciones identificadas, dos corresponden a elementos ya resueltos por la plataforma
 existente y no requieren un proceso de búsqueda de conceptos. Las ocho restantes sí
 lo requieren, y son el punto de partida de la búsqueda de conceptos, externa e interna, que se
 desarrolla en la siguiente sección.
@@ -363,9 +362,14 @@ la externa, mediante literatura técnica y análisis comparativo de productos di
 etapa no se aplica ningún filtro ni selección, ya que solo se busca generar el listado más exhaustivo
 posible de alternativas, que se evaluarán formalmente en la etapa de selección de conceptos.
 
+\newpage
+
+
 \subsubsection*{Recibir y ejecutar comandos}
 
+
 \begin{itemize}
+
     \item \textbf{Pixhawk 6X} \\
     \textit{Justificación:} Es el controlador de vuelo ya integrado y en uso en la plataforma USV
     del grupo MACS, corriendo ArduPilot (ArduRover) sobre el stack ROS2/MAVROS ya definido.
@@ -385,11 +389,13 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
     a 480 MHz, redundancia doble de IMU, 36 g de peso (solo módulo
     FC). Es la opción más económica y compacta de la familia Pixhawk-estándar
     si se prioriza costo sobre redundancia \cite{Cite14} \cite{Cite15}. \\
+
 \end{itemize}
 
 \subsubsection*{Procesar datos de alto nivel (ordenador a bordo)}
 
 \begin{itemize}
+
     \item \textbf{Raspberry Pi 4 (8 GB)} \\
     \textit{Justificación:} SBC de bajo costo y bajo consumo (3--8 W), con
     soporte nativo de ROS 2 en ARM64. Adecuado para bridging de sensores,
@@ -416,9 +422,11 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
     planificación CPU-intensivas. Consumo considerablemente mayor (15--45 W) y requiere
     alimentación de 19--20 V con conversor DC-DC adicional, lo que complica su integración en
     el presupuesto energético del USV \cite{Cite16}. \\
+
 \end{itemize}
 
 \subsubsection*{Percibir el entorno}
+
 \begin{itemize}
   \item \textbf{LIDAR SLAMTEC RPLIDAR A3} \\
   \textit{Justificación:} LIDAR 2D de barrido 360°, alcance $\approx$25\,m, $\approx$170\,g y 
@@ -434,16 +442,18 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
   el RPLIDAR A3 \cite{Cite17}. \\
 
   \item \textbf{Cámara USB estándar} \\
-  \textit{Justificación:} Cámara RGB convencional con conexión USB (clase UVC), compatible de 
+  \textit{Justificación:} Cámara RGB convencional con conexión USB, compatible de 
   forma nativa con el ordenador a bordo sin necesidad de drivers propietarios ni SDK adicional. 
   Representa la opción más simple y económica para captura visual, aunque a diferencia de las 
   cámaras de profundidad no provee directamente información de distancia; el modelo específico 
   queda por definir según disponibilidad y requisitos de resolución/óptica del proyecto. Este concepto
   queda referenciado de forma interna, debido a que el equipo de proyecto ya cuenta con experiencia previa 
   en su integración y uso. 
+
 \end{itemize}
 
 \subsubsection*{Almacenar y registrar datos}
+
 \begin{itemize}
   \item \textbf{Almacenamiento local en tarjeta microSD} \\
   \textit{Justificación:} Medio de almacenamiento integrado de forma nativa en los ordenadores a 
@@ -477,5 +487,251 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
 
 \end{itemize}
 
+\subsubsection*{Medir consumo de energía y potencia}
+
+\begin{itemize}
+
+  \item \textbf{Módulo de potencia Ultra-Precise I2C (I2C-INA-BM)} \\
+  \textit{Justificación:} Módulo de medición de voltaje y corriente basado en el IC Texas Instruments 
+  INA228, con resolución de 20 bits, precisión de $\pm$0.1\% en voltaje y $\pm$2\% en corriente, 
+  comunicación I2C, 4\,g de peso y compatibilidad nativa (sin calibración) con firmware ArduPilot, el 
+  cual es compatible con el autopiloto Pixhawk 6X ya seleccionado. Cubre ampliamente los rangos de 
+  voltaje y corriente típicos de un USV de este tamaño, con muy bajo impacto en peso y consumo \cite{Cite21}. \\
+
+  \item \textbf{Sensor de corriente por shunt I2C} \\
+  \textit{Justificación:} Sensores de bajo costo que miden corriente mediante una resistencia shunt y 
+  comunican los datos por I2C directamente al ordenador a bordo, permitiendo monitoreo de potencia 
+  independiente del autopiloto. Han sido utilizados en robots móviles autónomos reales para perfilar el 
+  consumo de potencia en tiempo real como parte de estrategias de eficiencia energética del sistema \cite{Cite20}. \\
+
+\end{itemize}
+
+\subsubsection*{Almacenar y distribuir energía}
+
+\begin{itemize}
+
+  \item \textbf{Batería LiPo TATTU} \\
+  \textit{Justificación:} Batería de polímero de litio de 6 celdas (22.2\,V nominal), 4500\,mAh de 
+  capacidad, tasa de descarga continua de 25C, con 
+  conector estándar XT60. Su alta tasa de descarga cubre con holgura los picos de corriente de los 
+  motores de propulsión, y su tensión/capacidad son adecuadas para la autonomía objetivo del USV \cite{Cite22}. \\
+
+  \item \textbf{Batería LiPo genérica (química estándar de mercado).} \\
+  \textit{Justificación:} Alternativa de referencia dentro de la misma química (polímero de litio), 
+  considerando otras marcas/capacidades disponibles comercialmente. Mantiene las ventajas típicas de 
+  LiPo (alta tasa de descarga, bajo costo relativo, amplia disponibilidad) como punto de comparación 
+  frente al modelo TATTU específico y frente a otras químicas de litio \cite{Cite23}. \\
+
+  \item \textbf{Batería Li-ion cilíndrica} \\
+  \textit{Justificación:} Mayor densidad energética (150--250\,Wh/kg) que LiPo y LiFePO4, lo que se 
+  traduce en mayor autonomía de misión para un mismo peso de batería, un factor crítico dado el 
+  presupuesto de peso ajustado del sistema. Es ampliamente utilizada en vehículos autónomos de superficie 
+  por su balance entre autonomía y disponibilidad comercial en configuraciones de paquete a medida \cite{Cite23}. \\
+
+  \item \textbf{Batería LiFePO4} \\
+  \textit{Justificación:} Química con menor densidad energética (90--120\,Wh/kg) pero notablemente mayor 
+  seguridad térmica y vida útil en ciclos de carga/descarga, gracias a su estructura de cátodo tipo 
+  olivino, lo cual es relevante para un sistema que opera de forma prolongada y desatendida sobre agua. 
+  Es considerada la opción preferida cuando la seguridad y la vida útil priman sobre la autonomía máxima \cite{Cite23}. \\
+
+\end{itemize}
+
+\subsubsection*{Transmitir por sistemas de radio-frecuencia}
+\begin{itemize}
+  \item \textbf{RFD900x Telemetry Modem} \\
+  \textit{Justificación:} Radio módem de largo alcance en banda ISM de 900\,MHz, con hasta 1\,W 
+  (+30\,dBm) de potencia de transmisión, tasa de datos de 500\,kbit/s y alcances demostrados de decenas 
+  de kilómetros según antena y configuración. Es el radio de telemetría MAVLink estándar de facto en el 
+  ecosistema ArduPilot/Pixhawk ya utilizado en el proyecto, lo que garantiza compatibilidad directa sin 
+  desarrollo adicional de firmware \cite{Cite10}. \\
+
+  \item \textbf{Telemetría basada en LoRa} \\
+  \textit{Justificación:} Tecnología de modulación de espectro ensanchado de bajo consumo y largo 
+  alcance, evaluada en trabajos académicos para mejorar cobertura de señal en escenarios con vehículos 
+  no tripulados. Ofrece una arquitectura de comunicación distinta (red de bajo ancho de banda, orientada 
+  a paquetes pequeños) que podría complementar o sustituir un enlace serie punto a punto como el del 
+  RFD900x, a costa de menor tasa de datos \cite{Cite24}. \\
+\end{itemize}
+
+\subsubsection*{Transmitir datos a través de red local}
+\begin{itemize}
+  \item \textbf{Arquitectura para enlace punto a punto de Ubiquiti airMAX} \\
+  \textit{Justificación:} Arquitectura ya contemplada en el diseño del sistema: un radio Bullet AC 
+  montado en cada USV enlazado por airMAX a un Rocket AC en la estación base, con throughput de varios 
+  cientos de Mbps y alcance de varios kilómetros en línea de vista, adecuado para transmitir video, 
+  nubes de puntos LIDAR y telemetría en tiempo real desde el agua hacia la base \cite{Cite25}. \\
+
+
+  \item \textbf{Arquitectura de red dedicada para múltiples vehículos no tripulados (topología mesh/estrella heterogénea)} \\
+  \textit{Justificación:} Arquitecturas de red diseñadas específicamente para flotas de vehículos no 
+  tripulados, que combinan topologías de estrella y malla según el rango y tasa de datos requeridos por 
+  cada tipo de comunicación (telemetría vs. video). Es directamente relevante para el carácter multi-USV 
+  de este proyecto, donde distintos enlaces (USV-USV, USV-base) pueden requerir distintas topologías de 
+  red \cite{Cite26}. \\
+
+\end{itemize}
+
+\newpage
+
+Con base en los conceptos generados para cada subfunción, se elabora la Tabla 
+\ref{tab:combinacion_conceptos} de combinación de conceptos, la cual organiza las alternativas 
+candidatas por subfunción sin descartar aún ninguna opción. 
+
+
+\begin{longtable}{|p{2.2cm}|p{3.3cm}|p{3.3cm}|p{3.3cm}|p{3.3cm}|}
+\caption{Tabla de combinación de conceptos por subfunción.}
+\label{tab:combinacion_conceptos} \\
+\hline
+\textbf{Subfunción} & \textbf{Combinación A} & \textbf{Combinación B} & \textbf{Combinación C} & \textbf{Combinación D} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Subfunción} & \textbf{Combinación A} & \textbf{Combinación B} & \textbf{Combinación C} & \textbf{Combinación D} \\
+\hline
+\endhead
+
+SF1 & Pixhawk 6X & Pixhawk 6C & Pix32 v6 & Pixhawk 6X \\
+\hline
+SF2 & Raspberry Pi 5 & Raspberry Pi 4 & Intel NUC 13 Pro & Jetson Orin Nano \\
+\hline
+SF3 & LIDAR SLAMTEC & LIDAR Livox & LIDAR SLAMTEC & Cámara USB \\
+\hline
+SF4 & InfluxDB & SSD externo USB & microSD & Rosbag2 \\
+\hline
+SF5 & Módulo de potencia & Sensor de corriente & Sensor de corriente & Módulo de potencia \\
+\hline
+SF6 & LiPo genérica & Li-ion cilíndrica & LiFePO4 & LiPo Tattu \\
+\hline
+SF7 & LoRa & LoRa & RFD900x & RFD900x \\
+\hline
+SF8 & Ubiquiti airMAX & Arquitectura de red & Arquitectura de red & Ubiquiti airMAX \\
+\hline
+\end{longtable}
+
+Para evaluar las cuatro combinaciones de concepto generadas, se construye 
+primero una matriz de filtrado siguiendo la metodología, tomando la Combinación A como concepto 
+de referencia. Los criterios utilizados corresponden directamente a las doce métricas de la 
+Tabla \ref{tab:metricas}, junto con su importancia heredada de la necesidad primaria de origen. Cada combinación 
+se califica frente a la referencia como superior (+), equivalente (0) o inferior (--) en cada 
+métrica, y se totaliza para obtener una evaluación neta que orienta cuáles combinaciones continúan 
+hacia la matriz de evaluación ponderada. Esta tabla se observa en la Tabla \ref{tab:tamizado}.
+
+\newpage
+
+\begin{longtable}{|>{\centering\arraybackslash}p{2.2cm}|p{5cm}|>{\centering\arraybackslash}p{1cm}|>{\centering\arraybackslash}p{1.4cm}|>{\centering\arraybackslash}p{1.2cm}|>{\centering\arraybackslash}p{1.8cm}|>{\centering\arraybackslash}p{1.2cm}|}
+\caption{Matriz de filtrado de combinaciones de concepto.}
+\label{tab:filtrado} \\
+\hline
+\textbf{\#} & \textbf{Criterio} & \textbf{Imp.} & \textbf{A (Ref.)} & \textbf{B} & \textbf{C} & \textbf{D} \\
+\hline
+\endfirsthead
+\hline
+\textbf{\#} & \textbf{Criterio} & \textbf{Imp.} & \textbf{A (Ref.)} & \textbf{B} & \textbf{C} & \textbf{D} \\
+\hline
+\endhead
+
+M1 & Tasa de pruebas funcionales superadas ($\geq$90\%) & 5 & 0 & 0 & $-$ & + \\
+\hline
+M2 & Disponibilidad de sensores ($\geq$90\%) & 5 & 0 & + & 0 & + \\
+\hline
+M3 & Latencia de adquisición ($\leq$500\,ms) & 5 & 0 & 0 & 0 & + \\
+\hline
+M4 & Error de trayectoria ($\leq$2\,m) & 5 & 0 & 0 & $-$ & 0 \\
+\hline
+M5 & Latencia de comunicación ($\leq$1\,s) & 5 & 0 & + & $-$ & + \\
+\hline
+M6 & Tasa de éxito de misión ($\geq$85\%) & 5 & 0 & 0 & $-$ & + \\
+\hline
+M7 & Peso de componentes añadidos ($\leq$5\,kg) & 5 & 0 & 0 & $-$ & 0 \\
+\hline
+M8 & Alcance de comunicación ($\geq$100\,m) & 5 & 0 & + & + & + \\
+\hline
+M9 & Frecuencia de imágenes ($\approx$1\,Hz) & 2 & 0 & 0 & 0 & + \\
+\hline
+M10 & Mecanismos de recuperación ($\geq$3) & 5 & 0 & + & + & 0 \\
+\hline
+M11 & Modificación del casco y estabilidad (GM) & 5 & 0 & 0 & $-$ & 0 \\
+\hline
+M12 & Accesibilidad de conectores & 4 & 0 & 0 & 0 & 0 \\
+\hline
+\textbf{Suma +} & & & -- & 4 & 2 & 7 \\
+\hline
+\textbf{Suma 0} & & & -- & 8 & 4 & 5 \\
+\hline
+\textbf{Suma --} & & & -- & 0 & 6 & 0 \\
+\hline
+\textbf{Evaluación neta} & & & -- & +4 & $-4$ & +7 \\
+\hline
+\textbf{Lugar} & & & Ref. & 2 & 3 & 1 \\
+\hline
+\textbf{¿Continúa?} & & & Ref. & SI & ELIMINA & SI \\
+\hline
+\end{longtable}
+
+La Combinación C queda eliminada del proceso, ya que acumula seis criterios inferiores a la referencia, 
+principalmente por el mayor peso del Intel NUC 13 Pro, el autopiloto Pix32 v6 sin validar por el 
+equipo, y la mayor latencia asociada a LoRa frente a RFD900x. Las Combinaciones B y D, en cambio, 
+no presentan ninguna calificación inferior a la referencia y continúan hacia la matriz de 
+evaluación ponderada junto con A, que se conserva como línea base de comparación.
+
+\newpage
+
+
+Con las combinaciones que pasan el filtro (A, B y D) se construye la matriz de evaluación ponderada, 
+donde cada criterio se pondera según su importancia relativa dentro del total de las doce métricas, 
+y cada combinación recibe una calificación de 1 a 5 
+según qué tan cerca se espera que su desempeño real esté del valor ideal de cada métrica. Esta tabla 
+se observa en la Tabla \ref{tab:evaluacion_ponderada}, donde se incluyen las calificaciones y ponderaciones de cada combinación, así como el total ponderado 
+y el lugar obtenido por cada una.
+
+\begin{longtable}{|>{\centering\arraybackslash}p{2.2cm}|p{3.8cm}|>{\centering\arraybackslash}p{1.2cm}|>{\centering\arraybackslash}p{1cm}|>{\centering\arraybackslash}p{1.1cm}|>{\centering\arraybackslash}p{1cm}|>{\centering\arraybackslash}p{1.1cm}|>{\centering\arraybackslash}p{1cm}|>{\centering\arraybackslash}p{1.1cm}|}
+\caption{Matriz de evaluación ponderada de combinaciones de concepto.}
+\label{tab:evaluacion_ponderada} \\
+\hline
+\textbf{\#} & \textbf{Criterio} & \textbf{Peso} & \textbf{A Cal.} & \textbf{A Pond.} & \textbf{B Cal.} & \textbf{B Pond.} & \textbf{D Cal.} & \textbf{D Pond.} \\
+\hline
+\endfirsthead
+\hline
+\textbf{\#} & \textbf{Criterio} & \textbf{Peso} & \textbf{A Cal.} & \textbf{A Pond.} & \textbf{B Cal.} & \textbf{B Pond.} & \textbf{D Cal.} & \textbf{D Pond.} \\
+\hline
+\endhead
+
+M1 & Tasa de pruebas funcionales & 8.93\% & 3 & 0.27 & 3 & 0.27 & 5 & 0.45 \\
+\hline
+M2 & Disponibilidad de sensores & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\
+\hline
+M3 & Latencia de adquisición & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\
+\hline
+M4 & Error de trayectoria & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\
+\hline
+M5 & Latencia de comunicación & 8.93\% & 3 & 0.27 & 3 & 0.27 & 5 & 0.45 \\
+\hline
+M6 & Tasa de éxito de misión & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\
+\hline
+M7 & Peso de componentes añadidos & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\
+\hline
+M8 & Alcance de comunicación & 8.93\% & 3 & 0.27 & 4 & 0.36 & 4 & 0.36 \\
+\hline
+M9 & Frecuencia de imágenes & 3.57\% & 3 & 0.11 & 3 & 0.11 & 4 & 0.14 \\
+\hline
+M10 & Mecanismos de recuperación & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\
+\hline
+M11 & Modificación del casco y GM & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\
+\hline
+M12 & Accesibilidad de conectores & 7.13\% & 3 & 0.21 & 3 & 0.21 & 3 & 0.21 \\
+\hline
+\textbf{Total} & & \textbf{100\%} & \multicolumn{2}{c|}{\textbf{3.02}} & \multicolumn{2}{c|}{\textbf{3.29}} & \multicolumn{2}{c|}{\textbf{3.77}} \\
+\hline
+\textbf{Lugar} & & & \multicolumn{2}{c|}{3} & \multicolumn{2}{c|}{2} & \multicolumn{2}{c|}{1} \\
+\hline
+\textbf{¿Continúa?} & & & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{Desarrollar} \\
+\hline
+\end{longtable}
+
+La Combinación D obtiene la calificación ponderada más alta, impulsada principalmente 
+por el uso de componentes ya validados por el equipo y por un ordenador a bordo con mayor capacidad de cómputo, 
+que se traducen en ventajas consistentes en confiabilidad, comunicación y 
+procesamiento frente a A y B. La Combinación D se selecciona, por tanto, como el concepto de 
+sistema completo a desarrollar en las siguientes etapas del proyecto.
 
 
