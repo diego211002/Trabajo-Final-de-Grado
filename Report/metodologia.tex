@@ -299,8 +299,8 @@ Las métricas M7, M9, M10, M11 y M12
 tampoco requirieron ningún tipo de investigación adicional, ya que el peso máximo de componentes,
 la frecuencia de imágenes, el número de mecanismos de recuperación y las dos condiciones
 binarias fueron indicados directamente por el equipo de MACS durante la entrevista (Apéndice
-[A]), aunque esos valores se registran únicamente en la Tabla 3.2 y
-no como necesidades independientes en la Tabla 3.1. Las métricas M1, M2 y M6, por su parte,
+[A]), aunque esos valores se registran únicamente en la Tabla \ref{tab:metricas} y
+no como necesidades independientes en la Tabla \ref{tab:necesidades}. Las métricas M1, M2 y M6, por su parte,
 no cuentan con un valor equivalente ni en la entrevista ni en la literatura consultada, ya que
 se establecieron como criterio de aceptación definido por el propio equipo de desarrollo del
 proyecto, ante la ausencia de un estándar externo aplicable a un sistema de este alcance.
@@ -614,7 +614,7 @@ de referencia. Los criterios utilizados corresponden directamente a las doce mé
 Tabla \ref{tab:metricas}, junto con su importancia heredada de la necesidad primaria de origen. Cada combinación 
 se califica frente a la referencia como superior (+), equivalente (0) o inferior (--) en cada 
 métrica, y se totaliza para obtener una evaluación neta que orienta cuáles combinaciones continúan 
-hacia la matriz de evaluación ponderada. Esta tabla se observa en la Tabla \ref{tab:tamizado}.
+hacia la matriz de evaluación ponderada. Esta tabla se observa en la Tabla \ref{tab:filtrado}.
 
 \newpage
 
@@ -676,62 +676,159 @@ evaluación ponderada junto con A, que se conserva como línea base de comparaci
 
 \newpage
 
+Antes de presentar la matriz, se describe brevemente el significado de cada criterio de
+evaluación, a excepción de M4 (Error de trayectoria) y M7 (Peso de componentes añadidos),
+cuya definición es evidente a partir de su nombre:
 
-Con las combinaciones que pasan el filtro (A, B y D) se construye la matriz de evaluación ponderada, 
-donde cada criterio se pondera según su importancia relativa dentro del total de las doce métricas, 
-y cada combinación recibe una calificación de 1 a 5 
-según qué tan cerca se espera que su desempeño real esté del valor ideal de cada métrica. Esta tabla 
-se observa en la Tabla \ref{tab:evaluacion_ponderada}, donde se incluyen las calificaciones y ponderaciones de cada combinación, así como el total ponderado 
-y el lugar obtenido por cada una.
+\begin{itemize}
+  \item \textbf{M1/M6 -- Tasa de éxito en pruebas funcionales y de misión:} combina el
+  porcentaje de ciclos de arranque, comunicación y respuesta a comandos superados por el
+  autopiloto y el ordenador a bordo, con el porcentaje de misiones de muestreo completadas
+  satisfactoriamente según los puntos de muestreo planificados.
+  \item \textbf{M2 -- Disponibilidad de sensores:} porcentaje del tiempo de misión en que
+  los sensores entregan datos válidos sin interrupciones.
+  \item \textbf{M3 -- Latencia de adquisición:} tiempo transcurrido entre la captura física
+  del dato y su disponibilidad en el pipeline de procesamiento (ROS2).
+  \item \textbf{M5 -- Latencia de comunicación:} tiempo que tarda un mensaje de coordinación
+  en transmitirse entre los USV durante la navegación por waypoints.
+  \item \textbf{M8 -- Alcance de comunicación:} distancia máxima a la que se mantiene el
+  enlace entre los USV y la estación base.
+  \item \textbf{M9 -- Frecuencia de captura de imágenes:} número de cuadros capturados por
+  segundo por el sistema de percepción.
+  \item \textbf{M10 -- Mecanismos de recuperación:} cantidad de canales redundantes
+  disponibles para recuperar el sistema ante una falla de comunicación o control.
+  \item \textbf{M11 -- Modificación del casco y estabilidad (GM):} necesidad de modificar
+  el casco al integrar el nuevo hardware y su efecto sobre la altura metacéntrica de la
+  embarcación.
+  \item \textbf{M12 -- Accesibilidad de conectores:} facilidad de acceso físico a los
+  conectores de los componentes nuevos sin desmontaje mayor.
+\end{itemize}
 
-\begin{longtable}{|>{\centering\arraybackslash}p{2.2cm}|p{3.8cm}|>{\centering\arraybackslash}p{1.2cm}|>{\centering\arraybackslash}p{1cm}|>{\centering\arraybackslash}p{1.1cm}|>{\centering\arraybackslash}p{1cm}|>{\centering\arraybackslash}p{1.1cm}|>{\centering\arraybackslash}p{1cm}|>{\centering\arraybackslash}p{1.1cm}|}
+La calificación (Cal.) de cada combinación se asigna en una escala de 1 a 5, donde 1 indica
+que la combinación no alcanza el valor marginal de la métrica correspondiente (Tabla \ref{tab:metricas}),
+3 indica que cumple el valor marginal pero no alcanza el valor ideal, y 5 indica que
+alcanza o supera el valor ideal; los valores 2 y 4 representan desempeños intermedios entre
+estos dos puntos de referencia.
+
+Con las combinaciones que pasan el filtro (A, B y D) se construye la matriz de evaluación
+ponderada, donde cada criterio se pondera según su importancia relativa dentro del total de
+las métricas consideradas, y cada combinación recibe una calificación de 1 a 5 según qué tan
+cerca se espera que su desempeño real esté del valor ideal de cada métrica. Esta tabla se
+observa en la Tabla \ref{tab:evaluacion_ponderada}, donde se incluyen las calificaciones y ponderaciones de cada
+combinación, así como el total ponderado y el lugar obtenido por cada una.
+
+\begin{longtable}{|>{\centering\arraybackslash}p{1.9cm}|p{3.4cm}|>{\centering\arraybackslash}p{1.2cm}|>{\centering\arraybackslash}p{0.9cm}|>{\centering\arraybackslash}p{1.1cm}|>{\centering\arraybackslash}p{0.9cm}|>{\centering\arraybackslash}p{1.1cm}|>{\centering\arraybackslash}p{0.9cm}|>{\centering\arraybackslash}p{1.1cm}|}
 \caption{Matriz de evaluación ponderada de combinaciones de concepto.}
 \label{tab:evaluacion_ponderada} \\
 \hline
-\textbf{\#} & \textbf{Criterio} & \textbf{Peso} & \textbf{A Cal.} & \textbf{A Pond.} & \textbf{B Cal.} & \textbf{B Pond.} & \textbf{D Cal.} & \textbf{D Pond.} \\
+\multirow{2}{*}{Métrica} & \multirow{2}{*}{Criterio} & \multirow{2}{*}{Peso} & \multicolumn{2}{c|}{A} & \multicolumn{2}{c|}{B} & \multicolumn{2}{c|}{D} \\
+\cline{4-9}
+ & & & Cal. & Pond. & Cal. & Pond. & Cal. & Pond. \\
 \hline
 \endfirsthead
 \hline
-\textbf{\#} & \textbf{Criterio} & \textbf{Peso} & \textbf{A Cal.} & \textbf{A Pond.} & \textbf{B Cal.} & \textbf{B Pond.} & \textbf{D Cal.} & \textbf{D Pond.} \\
+\multirow{2}{*}{\#} & \multirow{2}{*}{Criterio} & \multirow{2}{*}{Peso} & \multicolumn{2}{c|}{A} & \multicolumn{2}{c|}{B} & \multicolumn{2}{c|}{D} \\
+\cline{4-9}
+ & & & Cal. & Pond. & Cal. & Pond. & Cal. & Pond. \\
 \hline
 \endhead
 
-M1 & Tasa de pruebas funcionales & 8.93\% & 3 & 0.27 & 3 & 0.27 & 5 & 0.45 \\
-\hline
-M2 & Disponibilidad de sensores & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\
-\hline
-M3 & Latencia de adquisición & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\
-\hline
-M4 & Error de trayectoria & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\
-\hline
-M5 & Latencia de comunicación & 8.93\% & 3 & 0.27 & 3 & 0.27 & 5 & 0.45 \\
-\hline
-M6 & Tasa de éxito de misión & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\
-\hline
-M7 & Peso de componentes añadidos & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\
-\hline
-M8 & Alcance de comunicación & 8.93\% & 3 & 0.27 & 4 & 0.36 & 4 & 0.36 \\
-\hline
-M9 & Frecuencia de imágenes & 3.57\% & 3 & 0.11 & 3 & 0.11 & 4 & 0.14 \\
-\hline
-M10 & Mecanismos de recuperación & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\
-\hline
-M11 & Modificación del casco y GM & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\
-\hline
-M12 & Accesibilidad de conectores & 7.13\% & 3 & 0.21 & 3 & 0.21 & 3 & 0.21 \\
-\hline
-\textbf{Total} & & \textbf{100\%} & \multicolumn{2}{c|}{\textbf{3.02}} & \multicolumn{2}{c|}{\textbf{3.29}} & \multicolumn{2}{c|}{\textbf{3.77}} \\
-\hline
-\textbf{Lugar} & & & \multicolumn{2}{c|}{3} & \multicolumn{2}{c|}{2} & \multicolumn{2}{c|}{1} \\
-\hline
-\textbf{¿Continúa?} & & & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{Desarrollar} \\
-\hline
+M1/M6 & Tasa de éxito en pruebas funcionales y de misión & 17.86\% & 3 & 0.54 & 3 & 0.54 & 4 & 0.71 \\ \hline
+M2 & Disponibilidad de sensores & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\ \hline
+M3 & Latencia de adquisición & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\ \hline
+M4 & Error de trayectoria & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\ \hline
+M5 & Latencia de comunicación & 8.93\% & 3 & 0.27 & 3 & 0.27 & 5 & 0.45 \\ \hline
+M7 & Peso de componentes añadidos & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\ \hline
+M8 & Alcance de comunicación & 8.93\% & 4 & 0.36 & 4 & 0.36 & 4 & 0.36 \\ \hline
+M9 & Frecuencia de imágenes & 3.57\% & 3 & 0.11 & 3 & 0.11 & 4 & 0.14 \\ \hline
+M10 & Mecanismos de recuperación & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\ \hline
+M11 & Modificación del casco y GM & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\ \hline
+M12 & Accesibilidad de conectores & 7.13\% & 3 & 0.21 & 3 & 0.21 & 3 & 0.21 \\ \hline
+Total & & 100\% & \multicolumn{2}{c|}{3.11} & \multicolumn{2}{c|}{3.29} & \multicolumn{2}{c|}{3.76} \\ \hline
+Lugar & & & \multicolumn{2}{c|}{3} & \multicolumn{2}{c|}{2} & \multicolumn{2}{c|}{1} \\ \hline
+¿Continúa? & & & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{Desarrollar} \\ \hline
 \end{longtable}
 
-La Combinación D obtiene la calificación ponderada más alta, impulsada principalmente 
-por el uso de componentes ya validados por el equipo y por un ordenador a bordo con mayor capacidad de cómputo, 
-que se traducen en ventajas consistentes en confiabilidad, comunicación y 
-procesamiento frente a A y B. La Combinación D se selecciona, por tanto, como el concepto de 
-sistema completo a desarrollar en las siguientes etapas del proyecto.
+La Combinación D obtiene la calificación ponderada más alta, impulsada principalmente
+por el uso de componentes ya validados por el equipo y por un ordenador a bordo con
+mayor capacidad de cómputo, que se traducen en ventajas consistentes en confiabilidad,
+comunicación y procesamiento frente a A y B. La Combinación D se selecciona, por tanto,
+como el concepto de sistema completo a desarrollar en las siguientes etapas del proyecto.
+
+\newpage
+
+\section{Pruebas y validación del sistema}
+
+Siguiendo la rama derecha del Modelo en V definida en la Sección 3.1.2, esta sección detalla las 
+pruebas concretas planeadas para cada uno de sus tres niveles, trazando cada una a las métricas 
+correspondientes de la Tabla \ref{tab:metricas} y, a través de estas, a las necesidades del cliente de la Tabla \ref{tab:necesidades}. 
+Cuando varias métricas se verifican de forma natural durante la misma ejecución de prueba, se agrupan en una sola, en vez 
+de repetir el montaje experimental.
+
+\subsection{Pruebas unitarias por subsistema}
+
+Este nivel verifica que cada subsistema, de forma individual, cumple su función antes de 
+integrarse con el resto del sistema.
+
+\textbf{Prueba 1: Ciclo de arranque y respuesta a comandos (M1).} Esta prueba verifica que el 
+autopiloto y el ordenador a bordo arrancan correctamente y responden a comandos básicos. Se 
+ejecuta un mínimo de 10 ciclos por vehículo, cada uno compuesto por arranque del sistema, 
+establecimiento de comunicación autopiloto-ordenador a bordo (vía MAVROS) y envío de un comando 
+de prueba. Se registra el resultado binario (Éxito/Falla) de cada ciclo. 
+
+\textbf{Prueba 2: Desempeño de sensores en misión continua (M2, M3, M9).} Esta prueba verifica, 
+en una única misión continua de al menos 30 minutos en laboratorio, tres aspectos del 
+desempeño de los sensores: su disponibilidad (porcentaje de tiempo con datos válidos sin 
+interrupciones), la latencia de adquisición (tiempo entre captura física y 
+disponibilidad en el pipeline ROS2) y la frecuencia de captura de imágenes 
+(toma de tiempo de cada cuadro). 
+
+\textbf{Prueba 3: Verificación física de componentes (M7, M12).} Esta prueba verifica, en una 
+única inspección física previa y posterior a la integración, que el peso total del hardware 
+nuevo no compromete el presupuesto de peso de la embarcación y que los conectores de los 
+componentes nuevos permanecen accesibles sin desmontaje mayor. Se realiza el pesaje individual 
+de cada componente y la inspección 
+de acceso a cada conector. 
+
+\textbf{Prueba 4: Conmutación de mecanismos de recuperación (M10).} Esta prueba verifica que el 
+sistema cuenta con múltiples canales redundantes de recuperación ante fallos y que estos 
+conmutan correctamente. Se desconecta intencionalmente cada canal de comunicación o control de 
+forma individual (radio-frecuencia, red local, posicionamiento) mientras el sistema opera, 
+confirmando la activación del mecanismo de conmutación (failover) correspondiente. 
+
+\newpage
+
+\subsection{Pruebas de integración entre módulos}
+
+Este nivel verifica el comportamiento del USV como sistema integrado, una vez combinados sus 
+subsistemas. Constituye la verificación directa del Objetivo específico 3. La métrica M5 
+(latencia de comunicación) se verifica en conjunto con M4 dentro de la Prueba 1, al compartir la misma misión de coordinación por waypoints; no se repite aquí como prueba 
+independiente.
+
+\textbf{Prueba 1: Alcance de comunicación (M8).} Esta prueba verifica el alcance efectivo del 
+enlace de comunicación entre USV y estación base. Se realizan pruebas de campo incrementando 
+progresivamente la distancia hasta observar pérdida de enlace. 
+
+\textbf{Prueba 2: Modificación del casco y estabilidad (M11).} Esta prueba verifica que la 
+integración del hardware nuevo no compromete la integridad estructural ni la estabilidad de la 
+embarcación existente. Se realiza una inspección visual del casco tras la integración completa y 
+el cálculo de la altura metacéntrica (GM) del casco cargado frente al casco vacío. El criterio 
+de aceptación corresponde a ausencia de modificación estructural, con GM cargado dentro del 
+rango de estabilidad de referencia.
+
+\subsection{Validación del sistema completo}
+
+Este nivel valida el desempeño cooperativo de la flota multi-USV contra los requisitos originales del cliente. Constituye la verificación directa del Objetivo específico 4.
+
+\textbf{Prueba 1: Navegación cooperativa por waypoints (M4, M5).} Esta prueba valida, en una 
+única misión de al menos 20 minutos con dos USV ejecutando waypoints de forma simultánea 
+(en simulación y en prueba de concepto física), tanto la precisión de navegación como la latencia 
+de comunicación de coordinación. Se registran la trayectoria planeada frente a la real, y la 
+latencia extremo a extremo de los mensajes de coordinación, en los logs de misión y en el reporte 
+técnico de comunicaciones y navegación. 
+
+\textbf{Prueba 2: Tasa de éxito de misión (M6).} Esta prueba valida que el sistema completo 
+cumple exitosamente misiones de coordinación multi-USV de principio a fin. Se ejecutan al menos 
+3 pruebas de integración independientes, con al menos 2 puntos de muestreo por USV por misión. 
 
 
