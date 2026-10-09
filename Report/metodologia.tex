@@ -757,78 +757,229 @@ como el concepto de sistema completo a desarrollar en las siguientes etapas del 
 
 \newpage
 
-\section{Pruebas y validación del sistema}
+Al resultar ganadora la Combinación D, el concepto seleccionado para cada una de las
+subfunciones de la descomposición funcional queda definido como se resume en
+la Tabla \ref{tab:concepto_ganador}. Las dos subfunciones que no requirieron búsqueda de conceptos se mantienen
+con la solución ya existente en la plataforma USV base.
 
-Siguiendo la rama derecha del Modelo en V definida en la Sección 3.1.2, esta sección detalla las 
-pruebas concretas planeadas para cada uno de sus tres niveles, trazando cada una a las métricas 
-correspondientes de la Tabla \ref{tab:metricas} y, a través de estas, a las necesidades del cliente de la Tabla \ref{tab:necesidades}. 
-Cuando varias métricas se verifican de forma natural durante la misma ejecución de prueba, se agrupan en una sola, en vez 
-de repetir el montaje experimental.
+\begin{longtable}{|>{\centering\arraybackslash}p{1.1cm}|p{5.2cm}|p{7.2cm}|}
+\caption{Concepto ganador por subfunción (Combinación D).}
+\label{tab:concepto_ganador} \\
+\hline
+\textbf{N.º} & \textbf{Subfunción} & \textbf{Concepto ganador} \\
+\hline
+\endfirsthead
+\hline
+\textbf{N.º} & \textbf{Subfunción} & \textbf{Concepto ganador} \\
+\hline
+\endhead
 
-\subsection{Pruebas unitarias por subsistema}
-
-Este nivel verifica que cada subsistema, de forma individual, cumple su función antes de 
-integrarse con el resto del sistema.
-
-\textbf{Prueba 1: Ciclo de arranque y respuesta a comandos (M1).} Esta prueba verifica que el 
-autopiloto y el ordenador a bordo arrancan correctamente y responden a comandos básicos. Se 
-ejecuta un mínimo de 10 ciclos por vehículo, cada uno compuesto por arranque del sistema, 
-establecimiento de comunicación autopiloto-ordenador a bordo (vía MAVROS) y envío de un comando 
-de prueba. Se registra el resultado binario (Éxito/Falla) de cada ciclo. 
-
-\textbf{Prueba 2: Desempeño de sensores en misión continua (M2, M3, M9).} Esta prueba verifica, 
-en una única misión continua de al menos 30 minutos en laboratorio, tres aspectos del 
-desempeño de los sensores: su disponibilidad (porcentaje de tiempo con datos válidos sin 
-interrupciones), la latencia de adquisición (tiempo entre captura física y 
-disponibilidad en el pipeline ROS2) y la frecuencia de captura de imágenes 
-(toma de tiempo de cada cuadro). 
-
-\textbf{Prueba 3: Verificación física de componentes (M7, M12).} Esta prueba verifica, en una 
-única inspección física previa y posterior a la integración, que el peso total del hardware 
-nuevo no compromete el presupuesto de peso de la embarcación y que los conectores de los 
-componentes nuevos permanecen accesibles sin desmontaje mayor. Se realiza el pesaje individual 
-de cada componente y la inspección 
-de acceso a cada conector. 
-
-\textbf{Prueba 4: Conmutación de mecanismos de recuperación (M10).} Esta prueba verifica que el 
-sistema cuenta con múltiples canales redundantes de recuperación ante fallos y que estos 
-conmutan correctamente. Se desconecta intencionalmente cada canal de comunicación o control de 
-forma individual (radio-frecuencia, red local, posicionamiento) mientras el sistema opera, 
-confirmando la activación del mecanismo de conmutación (failover) correspondiente. 
+SF1 & Recibir y ejecutar comandos & Pixhawk 6X \\ \hline
+SF2 & Procesar datos de alto nivel (ordenador a bordo) & Jetson Orin Nano 8 GB \\ \hline
+SF3 & Percibir el entorno & Cámara USB estándar \\ \hline
+SF4 & Almacenar y registrar datos & Registro con rosbag2 (formato SQLite3) \\ \hline
+SF5 & Medir consumo de energía y potencia & Módulo de potencia Ultra-Precise I2C (I2C-INA-BM) \\ \hline
+SF6 & Almacenar y distribuir energía & Batería LiPo TATTU \\ \hline
+SF7 & Transmitir por sistemas de radiofrecuencia & RFD900x Telemetry Modem \\ \hline
+SF8 & Transmitir datos a través de red local & Enlace punto a punto Ubiquiti airMAX (Bullet AC en cada USV y Rocket AC en la estación base) \\ \hline
+SF9 & Dar propulsión a motores & Propulsores eléctricos existentes de la plataforma USV base (propulsión diferencial, aislados y protegidos contra agua), con sus variadores \\ \hline
+SF10 & Integrar y proteger la estructura del USV con hardware nuevo & Estructura y base de flotabilidad existentes de la plataforma USV base, sin modificación \\ \hline
+\end{longtable}
 
 \newpage
 
+\section{Pruebas y validación del sistema}
+
+Siguiendo la rama derecha del Modelo en V definida en la Sección 3.1.2, esta sección detalla
+las pruebas concretas planeadas para cada uno de sus tres niveles, trazando cada una a las
+métricas correspondientes de la Tabla \ref{tab:metricas} y, a través de estas, a las necesidades del cliente
+de la Tabla \ref{tab:necesidades}. Cuando varias métricas se verifican de forma natural durante la misma
+ejecución de prueba, se agrupan en una sola, en vez de repetir el montaje experimental.
+
+\textbf{Cálculo del tamaño de muestra.} Las métricas expresadas como tasa o porcentaje
+(M1, M2, M3, M4, M5 y M6) se verifican estimando la proporción de observaciones que
+cumplen el criterio de aceptación. Se denomina \emph{ensayo} a cada repetición de un
+procedimiento con resultado de éxito o falla (un ciclo de arranque en M1, un punto de
+muestreo alcanzado o no en M6), y \emph{muestra} a cada registro generado de forma
+automática durante una misión continua (un dato entregado por los sensores en M2 y M3, una
+medición de posición en M4 y un mensaje de coordinación en M5). En ambos casos, el tamaño
+mínimo $n$ se calcula con la expresión para estimar una proporción poblacional
+\cite{Cite27,Cite28}:
+\begin{equation}
+  n_0 = \frac{Z^2\, p\, q}{e^2},
+  \label{eq:cochran}
+\end{equation}
+donde $Z$ es el valor de la distribución normal asociado al nivel de confianza, $p$ es la
+proporción esperada de éxito, $q$ es la proporción esperada de falla, definida como
+\begin{equation}
+  q = 1 - p,
+  \label{eq:q}
+\end{equation}
+y $e$ es el error máximo admisible. Cuando la población de la que se toma la muestra es
+finita y de tamaño conocido $N$ (por ejemplo, las muestras generadas durante una misión), se
+aplica la corrección
+\begin{equation}
+  n = \frac{n_0}{1 + \dfrac{n_0 - 1}{N}}.
+  \label{eq:fpc}
+\end{equation}
+Además, para que la aproximación normal sea válida se verifica que
+\begin{equation}
+  n\,p \geq 5 \quad \text{y} \quad n\,q \geq 5,
+  \label{eq:normal}
+\end{equation}
+\cite{Cite28}; si no se cumple, el tamaño se incrementa hasta
+\begin{equation}
+  n = \left\lceil \frac{5}{q} \right\rceil.
+  \label{eq:min}
+\end{equation}
+
+Los parámetros adoptados son un nivel de confianza del 95\,\% ($Z = 1.96$), un error
+ $e = 10\%$, y una proporción esperada $p$ igual al valor marginal de cada métrica
+en la Tabla \ref{tab:metricas}, de modo que la muestra permite verificar que el sistema alcanza, al menos,
+el desempeño mínimo exigido. Se adopta $e = 10\%$ y no el valor usual de 5\,\% debido a
+que las pruebas de campo tienen un costo y una disponibilidad de plataformas limitados; con
+$e = 5\%$ los tamaños requeridos se duplicarían o más. Las métricas que se determinan por
+medición directa de un conjunto reducido de elementos (M7, M10, M11 y M12) se verifican por
+censo, y M9 y M8 se tratan como se indica en cada prueba.
+
+\subsection{Pruebas unitarias por subsistema}
+
+Este nivel verifica que cada subsistema, de forma individual, cumple su función antes de
+integrarse con el resto del sistema.
+
+\textbf{Prueba 1: Ciclo de arranque y respuesta a comandos (M1).} Esta prueba verifica
+que el autopiloto y el ordenador a bordo arrancan correctamente y responden a comandos
+básicos. Cada ciclo se compone del arranque del sistema, el establecimiento de comunicación
+autopiloto--ordenador a bordo (vía MAVROS) y el envío de un comando de prueba, y se registra
+su resultado binario (Éxito/Falla). \emph{Tamaño de muestra:} considerando cada ciclo como un
+ensayo, con $p = 0.90$ y $q = 0.10$, la Ecuación~\eqref{eq:cochran} resulta en
+\begin{equation*}
+  n_0 = \frac{1.96^2 \cdot 0.90 \cdot 0.10}{0.10^2} = 34.57 \approx 35 \text{ ciclos.}
+\end{equation*}
+Como $n\,q = 35 \cdot 0.10 = 3.5 < 5$, no se cumple la condición de la
+Ecuación~\eqref{eq:normal}, por lo que, según la Ecuación~\eqref{eq:min},
+\begin{equation*}
+  n = \left\lceil \frac{5}{0.10} \right\rceil = 50 \text{ ciclos,}
+\end{equation*}
+repartidos en 25 por vehículo, lo que además cumple el mínimo de 10 ciclos por vehículo
+establecido en la Tabla \ref{tab:metricas}. El criterio de aceptación es una tasa de éxito $\geq 90\%$.
+
+\textbf{Prueba 2: Desempeño de sensores en misión continua (M2, M3, M9).} Esta prueba
+verifica, en una única misión continua de al menos 30 minutos en laboratorio, la
+disponibilidad de los sensores (porcentaje de tiempo con datos válidos sin interrupciones), la
+latencia de adquisición (tiempo entre captura física y disponibilidad en el pipeline ROS2) y
+la frecuencia de captura de imágenes (toma de tiempo de cada imagen).
+\emph{Tamaño de muestra:} a $\approx 1$~Hz, la misión genera una población finita de
+$N \approx 1800$ muestras. Para M2 y M3 se evalúa la proporción de muestras válidas y de
+muestras con latencia $\leq 500$~ms, con $p = 0.90$ y $e = 10\%$. Se parte del mismo
+$n_0 = 34.57$ calculado en la Prueba 1 y se aplica la Ecuación~\eqref{eq:fpc}:
+\begin{equation*}
+  n = \frac{34.57}{1 + \dfrac{34.57 - 1}{1800}} = 33.94 \approx 34 \text{ muestras.}
+\end{equation*}
+Dado que $n\,q = 34 \cdot 0.10 = 3.4 < 5$, se aplica la Ecuación~\eqref{eq:min}, que arroja
+nuevamente $n = 50$ muestras. La misión de 30 minutos supera ampliamente este mínimo, por lo
+que la evaluación utiliza la totalidad de los registros. M9 se calcula a partir de las marcas
+de tiempo de todas las imágenes capturadas durante la misión (censo).
+
+\textbf{Prueba 3: Verificación física de componentes (M7, M12).} Esta prueba verifica, en
+una única inspección física previa y posterior a la integración, que el peso total del
+hardware nuevo no compromete el presupuesto de peso de la embarcación y que los conectores
+de los componentes nuevos permanecen accesibles sin desmontaje mayor.
+\emph{Tamaño de muestra:} censo; se pesa cada componente y se inspecciona el acceso a la
+totalidad de los conectores.
+
+\textbf{Prueba 4: Conmutación de mecanismos de recuperación (M10).} Esta prueba verifica
+que el sistema cuenta con múltiples canales redundantes de recuperación ante fallos y que
+estos conmutan correctamente. Se desconecta intencionalmente cada canal de comunicación o
+control de forma individual (radiofrecuencia, red local, posicionamiento) mientras el sistema
+opera, confirmando la activación del mecanismo de conmutación (failover) correspondiente.
+\emph{Tamaño de muestra:} censo de todos los canales de recuperación del sistema.
+
 \subsection{Pruebas de integración entre módulos}
 
-Este nivel verifica el comportamiento del USV como sistema integrado, una vez combinados sus 
-subsistemas. Constituye la verificación directa del Objetivo específico 3. La métrica M5 
-(latencia de comunicación) se verifica en conjunto con M4 dentro de la Prueba 1, al compartir la misma misión de coordinación por waypoints; no se repite aquí como prueba 
-independiente.
+Este nivel verifica el comportamiento del USV como sistema integrado, una vez combinados
+sus subsistemas. Constituye la verificación directa del Objetivo específico 3. La métrica M5
+(latencia de comunicación) se verifica en conjunto con M4 dentro de la Prueba 1 de la
+Sección 3.4.3, al compartir la misma misión de coordinación por waypoints; no se repite aquí
+como prueba independiente.
 
-\textbf{Prueba 1: Alcance de comunicación (M8).} Esta prueba verifica el alcance efectivo del 
-enlace de comunicación entre USV y estación base. Se realizan pruebas de campo incrementando 
-progresivamente la distancia hasta observar pérdida de enlace. 
+\textbf{Prueba 1: Alcance de comunicación (M8).} Esta prueba verifica el alcance efectivo
+del enlace de comunicación entre USV y estación base. Se realizan pruebas de campo
+incrementando progresivamente la distancia hasta observar pérdida de enlace.
+\emph{Tamaño de muestra:} M8 es una magnitud continua y no una proporción, por lo que no se
+aplica el cálculo anterior. Debido al costo de las pruebas de campo, se realizan tres
+recorridos de distancia creciente y se reporta el alcance mínimo observado como estimación
+conservadora.
 
-\textbf{Prueba 2: Modificación del casco y estabilidad (M11).} Esta prueba verifica que la 
-integración del hardware nuevo no compromete la integridad estructural ni la estabilidad de la 
-embarcación existente. Se realiza una inspección visual del casco tras la integración completa y 
-el cálculo de la altura metacéntrica (GM) del casco cargado frente al casco vacío. El criterio 
-de aceptación corresponde a ausencia de modificación estructural, con GM cargado dentro del 
-rango de estabilidad de referencia.
+\textbf{Prueba 2: Modificación del casco y estabilidad (M11).} Esta prueba verifica que la
+integración del hardware nuevo no compromete la integridad estructural ni la estabilidad de
+la embarcación existente. Se realiza una inspección visual del casco tras la integración
+completa y el cálculo de la altura metacéntrica (GM) del casco cargado frente al casco
+vacío. El criterio de aceptación corresponde a ausencia de modificación estructural, con GM
+cargado dentro del rango de estabilidad de referencia. \emph{Tamaño de muestra:} censo; una
+inspección completa y un cálculo de GM por condición de carga (cargado y vacío).
+
+\newpage
 
 \subsection{Validación del sistema completo}
 
-Este nivel valida el desempeño cooperativo de la flota multi-USV contra los requisitos originales del cliente. Constituye la verificación directa del Objetivo específico 4.
+Este nivel valida el desempeño cooperativo de la flota multi-USV contra los requisitos
+originales del cliente. Constituye la verificación directa del Objetivo específico 4.
 
-\textbf{Prueba 1: Navegación cooperativa por waypoints (M4, M5).} Esta prueba valida, en una 
-única misión de al menos 20 minutos con dos USV ejecutando waypoints de forma simultánea 
-(en simulación y en prueba de concepto física), tanto la precisión de navegación como la latencia 
-de comunicación de coordinación. Se registran la trayectoria planeada frente a la real, y la 
-latencia extremo a extremo de los mensajes de coordinación, en los logs de misión y en el reporte 
-técnico de comunicaciones y navegación. 
+\textbf{Prueba 1: Navegación cooperativa por waypoints (M4, M5).} Esta prueba valida, en
+una misma misión de al menos 20 minutos con dos USV ejecutando waypoints de forma
+simultánea (en simulación y en prueba de concepto física), tanto la precisión de navegación
+como la latencia de comunicación de coordinación. Se registran la trayectoria planeada frente
+a la real y la latencia extremo a extremo de los mensajes de coordinación, en los logs de
+misión y en el reporte técnico de comunicaciones y navegación.
+\emph{Tamaño de muestra:} se evalúa la proporción de mediciones de posición con error
+$\leq 2$~m (M4) y de mensajes con latencia $\leq 1$~s (M5), con $p = 0.90$ y $e = 10\%$. Para
+una misión de 20 minutos a 1~Hz ($N \approx 1200$), la Ecuación~\eqref{eq:fpc} resulta en
+\begin{equation*}
+  n = \frac{34.57}{1 + \dfrac{34.57 - 1}{1200}} = 33.63 \approx 34 \text{ muestras.}
+\end{equation*}
+Como $n\,q = 3.4 < 5$, se aplica nuevamente la Ecuación~\eqref{eq:min}, por lo que el mínimo
+es $n = 50$ muestras por métrica y por USV. Cada misión registra más de 1200 muestras por
+USV, por lo que se utiliza la totalidad de los registros.
 
-\textbf{Prueba 2: Tasa de éxito de misión (M6).} Esta prueba valida que el sistema completo 
-cumple exitosamente misiones de coordinación multi-USV de principio a fin. Se ejecutan al menos 
-3 pruebas de integración independientes, con al menos 2 puntos de muestreo por USV por misión. 
+\textbf{Prueba 2: Tasa de éxito de misión (M6).} Esta prueba valida que el sistema completo
+cumple exitosamente misiones de coordinación multi-USV de principio a fin, con al menos 2
+puntos de muestreo por USV por misión. \emph{Tamaño de muestra:} cada punto de muestreo
+constituye un ensayo binario (alcanzado/no alcanzado). Con $p = 0.85$, $q = 0.15$ y
+$e = 10\%$, la Ecuación~\eqref{eq:cochran} resulta en
+\begin{equation*}
+  n_0 = \frac{1.96^2 \cdot 0.85 \cdot 0.15}{0.10^2} = 48.98 \approx 49 \text{ ensayos,}
+\end{equation*}
+y se cumple la Ecuación~\eqref{eq:normal}, pues $n\,q = 49 \cdot 0.15 = 7.35 \geq 5$. Como cada
+misión con dos USV y dos puntos por USV aporta cuatro ensayos, el número de misiones es
+\begin{equation*}
+  n_{\text{misiones}} = \left\lceil \frac{49}{2 \cdot 2} \right\rceil = 13 \text{ misiones}
+  \quad (52 \text{ ensayos}),
+\end{equation*}
+que se ejecutan en simulación. Las tres misiones físicas de prueba de concepto (12 ensayos)
+validan el comportamiento en condiciones reales, pero no se utilizan para la inferencia
+estadística, al ser insuficientes para el tamaño de muestra calculado.
 
+La Tabla~\ref{tab:muestras} resume el tamaño de muestra planeado para cada prueba.
 
+\begin{longtable}{|p{4.6cm}|>{\centering\arraybackslash}p{2cm}|p{6.2cm}|}
+\caption{Tamaño de muestra calculado por prueba.}
+\label{tab:muestras} \\
+\hline
+\textbf{Prueba} & \textbf{Métricas} & \textbf{Tamaño de muestra mínimo} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Prueba} & \textbf{Métricas} & \textbf{Tamaño de muestra mínimo} \\
+\hline
+\endhead
+Ciclo de arranque y comandos & M1 & 50 ciclos (25 por vehículo) \\ \hline
+Sensores en misión continua & M2, M3 & 50 muestras de $\approx 1800$ (se usan todas) \\ \hline
+ & M9 & Censo de las imágenes de la misión \\ \hline
+Verificación física & M7, M12 & Censo de componentes y conectores \\ \hline
+Mecanismos de recuperación & M10 & Censo de canales \\ \hline
+Alcance de comunicación & M8 & 3 recorridos; se reporta el mínimo \\ \hline
+Casco y estabilidad & M11 & Censo; 1 por condición de carga \\ \hline
+Navegación cooperativa & M4, M5 & 50 muestras por métrica y USV (se usan todas) \\ \hline
+Tasa de éxito de misión & M6 & 49 ensayos: 13 misiones simuladas (52 ensayos) \\ \hline
+\end{longtable}
