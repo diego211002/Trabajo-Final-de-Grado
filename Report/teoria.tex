@@ -1,175 +1,325 @@
 \chapter{Marco Teórico}
 \label{ch:marco}
 
-\section{Descripción}
+% =====================================================================
+% Sección 2.1 Trabajos Previos
+% =====================================================================
 
-Toda tesis hace referencia a trabajos previos en el área y trabajos afines que
-están directamente relacionados con lo planteado en la tesis.
+\section{Trabajos previos}
+\label{sec:trabajos_previos}
+ 
+El antecedente directo de este proyecto es el trabajo desarrollado en la propia
+Universidad de Sevilla sobre las mismas embarcaciones que se emplean aquí, por lo que
+se describe en primer lugar y con mayor detalle. A continuación se resumen los
+principales trabajos de la literatura sobre vehículos de superficie autónomos y
+sistemas multi-USV.
+ 
+% ---------------------------------------------------------------------
+\subsection{Automatización de la plataforma Invader en la Universidad de Sevilla}
+\label{subsec:trabajo_previo_invader}
+ 
+Iniesta Fernández~\cite{iniesta2025} abordó en su Trabajo Fin de Máster la
+automatización de una embarcación Invader Lipo 30000\,mAh, un barco cebador comercial
+concebido para su manejo por radiocontrol. La embarcación dispone de un casco de tipo
+catamarán de ABS de 5\,mm de espesor, con unas dimensiones de
+$60 \times 40 \times 20$\,cm y un peso inferior a 5\,kg. Se impulsa mediante dos
+motores MT 650 45T, cada uno con su propia hélice y su propio controlador electrónico
+de velocidad (ESC) reversible, y se alimenta con dos baterías de litio de 7,4\,V y
+15\,000\,mAh que proporcionan una autonomía declarada superior a tres horas. La
+embarcación carece de timón: la dirección se obtiene exclusivamente mediante la
+diferencia de velocidad entre ambos motores, lo que la convierte en un vehículo de
+propulsión diferencial.
+ 
+Como paso previo a la integración, el trabajo caracterizó mediante ingeniería inversa
+la electrónica original. Los ESC reciben una señal PWM bidireccional de 50\,Hz, en la
+que un ciclo de trabajo de entre el 7\,\% y el 8\,\% mantiene el motor en reposo,
+valores superiores lo hacen avanzar (8,75\,\% en avance recto) y valores inferiores lo
+hacen retroceder (6,25\,\% en retroceso). Los giros se obtienen aplicando ciclos de
+trabajo distintos a cada motor. Esta caracterización definió la interfaz que el
+autopiloto debía reproducir.
+ 
+Sobre esta base se integró un autopiloto Pixhawk 6X, alimentado mediante un módulo de
+potencia Holybro PM02D desde una batería independiente de 14,8\,V. El autopiloto se
+configuró con el firmware ArduPilot Rover en su clase de chasis para barcos y se
+gestionó desde la estación de control Mission Planner. El receptor de radiocontrol
+original se conectó al autopiloto mediante el protocolo SBUS, y las salidas se
+configuraron como acelerador izquierdo y derecho, correspondientes al esquema de
+dirección diferencial. La principal dificultad técnica fue la frecuencia de la señal
+de salida: el tipo de salida previsto en ArduPilot para motores de escobillas
+bipolares genera una PWM de 20\,kHz, pensada para gobernar directamente un puente H,
+mientras que los ESC de la embarcación esperan una señal de tipo servo de 50\,Hz. El
+problema se resolvió seleccionando el tipo de salida estándar, reasignando los canales
+del receptor y recalibrando sus rangos, de modo que el autopiloto reprodujera las
+señales generadas por el mando original. Además, se configuró el canal 5 de la emisora
+como conmutador entre los modos \textit{Manual} y \textit{Auto}, lo que permite al
+operador recuperar el control en cualquier momento.
+ 
+Para la telemetría se instalaron radiomódems RFD900X en la banda de 900\,MHz,
+conectados al puerto TELEM1 del autopiloto y configurados con el mismo canal en ambos
+extremos. Las pruebas de alcance fueron de carácter cualitativo: se comprobó que la
+telemetría seguía recibiéndose en la estación de control a distancias crecientes,
+aunque se observó una respuesta más lenta en los límites del alcance. Para poder armar
+el vehículo se desactivaron las comprobaciones previas al armado del autopiloto.
+Finalmente, se planificaron rutas de waypoints en Mission Planner y se realizaron
+pruebas en exterior, en las que se verificó con osciloscopio la conmutación entre
+modos y la frecuencia de las señales, y se constató que la embarcación seguía de forma
+autónoma los waypoints definidos. La validación fue de carácter funcional, sin registro
+de métricas cuantitativas de error de trayectoria, alcance o latencia.
+ 
+Como desarrollo futuro, el trabajo propone incorporar un ordenador a bordo con ROS~2
+que defina los movimientos de forma autónoma, en lugar de depender de rutas fijadas
+manualmente desde la estación de control; utilizar varias embarcaciones de forma
+simultánea en misiones coordinadas; y añadir sensores de calidad del agua, ya sea
+practicando aperturas en el casco o mediante una boya remolcada.
+ 
+En conjunto, el trabajo dejó una embarcación Invader con autopiloto configurado, enlace
+de telemetría y navegación por waypoints validada de forma funcional, operando como
+vehículo individual y sin ordenador a bordo. La extensión a varias embarcaciones
+coordinadas mediante ROS~2 quedó planteada como línea de trabajo futuro.
+ 
+% ---------------------------------------------------------------------
+\subsection{Sistemas USV y multi-USV en la literatura}
+\label{subsec:literatura_usv}
+ 
+La revisión de Dunbabin y Marques~\cite{dunbabin2012} identifica los sistemas marinos
+como los más maduros de la robótica ambiental y señala como retos abiertos la
+coordinación cooperativa con bajo ancho de banda y latencias asíncronas, así como la
+fiabilidad de las plataformas en campo. Los trabajos más cercanos a este proyecto pueden
+agruparse en dos líneas.
+ 
+\newpage
 
-Además, en el marco teórico debe aparecer la información absolutamente
-necesaria para comprender la solución, y por eso es recomendable escribir
-primero la solución (el siguiente capítulo), para ir anotando qué debe ser
-explicado en el marco teórico.
+En primer lugar, los trabajos centrados en la cooperación entre varios vehículos de
+superficie:
+ 
+\begin{itemize}
+  \item Manjanna \textit{et al.}~\cite{manjanna2018} emplean dos ASV con roles
+    diferenciados: uno construye un mapa de clorofila mediante procesos gaussianos y el
+    otro selecciona los puntos de muestreo físico. El sistema se valida en un embalse
+    real, aunque sin modelar la pérdida de comunicación entre vehículos.
+  \item Wen \textit{et al.}~\cite{wen2022} resuelven la navegación y la asignación de
+    áreas de una flota de dos a cuatro USV mediante el algoritmo MADDPG, con una
+    validación limitada a simulación.
+  \item Singh \textit{et al.}~\cite{singh2020} coordinan flotas de tres y cuatro USV
+    mediante una ruta planificada con A* y un objetivo virtual en el marco de
+    Serret--Frenet, también validado únicamente en simulación.
+\end{itemize}
+ 
+En segundo lugar, los trabajos que desarrollan y validan en campo plataformas USV de
+bajo coste, todos ellos con una arquitectura de doble controlador formada por un
+autopiloto para el control de bajo nivel y un ordenador a bordo para las tareas de alto
+nivel:
+ 
+\begin{itemize}
+  \item Gogendeau \textit{et al.}~\cite{gogendeau2024} construyen un ASV de código
+    abierto con Pixhawk, ArduPilot Rover y Raspberry Pi, comunicado mediante RFD900x a
+    868\,MHz, y reportan su vuelco con vientos superiores a 20 nudos.
+  \item Sotelo-Torres \textit{et al.}~\cite{sotelo2023} integran Pixhawk, Raspberry Pi 4
+    y telemetría RFD900+, con errores de seguimiento de hasta 2,5\,m en los giros.
+  \item Kumar \textit{et al.}~\cite{kumar2025} desarrollan dos USV de hardware idéntico
+    con ArduPilot, Jetson Orin Nano y ROS~2 Humble, empleados de forma secuencial, y
+    documentan las dificultades de los controladores nativos de ArduPilot para mantener
+    el rumbo bajo corrientes intensas.
+  \item Sears \textit{et al.}~\cite{sears2024} integran un USV comercial con ROS~2 sobre
+    una Jetson AGX Orin y reportan un alcance del enlace WiFi de entre 0,5 y 1\,km.
+  \item Mamani \textit{et al.}~\cite{Cite9} implementan un USV para muestreo de agua
+    con ROS~2, Nav2, posicionamiento GNSS RTK y supervisión mediante LoRa a 915\,MHz.
+\end{itemize}
+ 
+En conjunto, la cooperación entre varios USV se ha validado mayoritariamente en
+simulación o sobre plataformas de investigación dedicadas, mientras que los trabajos
+que emplean hardware de bajo coste basado en ArduPilot y se validan en campo se centran
+en un único vehículo.
 
-\subsection{Redacción}
+% =====================================================================
+% Sección 2.2 Conceptos clave
+% =====================================================================
 
-La \nt{redacción} en todo el documento debe seguir un estilo científico
-objetivo. Esto implica que se redacta de modo impersonal, sin utilizar primeras
-personas del singular o del plural, y se evita el uso de cualquier tipo de
-calificativo, sustituyéndolos siempre por datos concretos, vinculados a
-referencias bibliográficas o datos experimentales. Los comparativos también
-deben concretarse a hechos y datos, y nunca dejarse ``en el aire''. Por la
-naturaleza de la tesis, el tiempo verbal es usualmente presente, no perdiendo
-nunca de vista que se está explicando ``cómo hacer algo'', en vez de ``qué se
-hizo''.
+\section{Conceptos clave}
+\label{sec:conceptos}
+ 
+A continuación se definen los conceptos empleados a lo largo del informe que, sin ser
+elementales, resultan necesarios para comprender el diseño, la integración y la
+validación del sistema desarrollado. Los conceptos asociados a modelos o ecuaciones
+específicos, como los grados de libertad del vehículo, el error de seguimiento de
+trayectoria o las métricas de los enlaces de comunicación, se definen en la sección
+correspondiente de este capítulo.
+ 
+\begin{description}
+ 
+  \item[Vehículo de superficie no tripulado (USV):] embarcación que opera sobre la
+    superficie del agua sin tripulación a bordo, ya sea teleoperada desde una estación
+    remota o con capacidad de navegación autónoma~\cite{fossen2021}. Desde el punto de
+    vista del control, se trata de un vehículo no holonómico y habitualmente
+    subactuado, es decir, con menos actuadores independientes que grados de libertad,
+    cuyo movimiento se ve afectado por perturbaciones ambientales como el viento, el
+    oleaje y las corrientes~\cite{penaqueralta2020}. En la literatura también se les
+    denomina vehículos de superficie autónomos (ASV).
+ 
+  \item[Sistema multi-USV cooperativo:] conjunto de dos o más USV que operan de forma
+    simultánea en un mismo entorno y comparten información para cumplir un objetivo
+    común. Frente a un único vehículo, la cooperación permite cubrir mayores áreas en
+    menos tiempo, repartir tareas entre vehículos y aportar redundancia frente al fallo
+    de uno de ellos, a costa de requerir mecanismos de comunicación y coordinación entre
+    los vehículos~\cite{dunbabin2012} \cite{penaqueralta2020} \\.
+ 
+  \item[Autopiloto:] controlador embebido que ejecuta, sobre un sistema operativo de
+    tiempo real, las tareas de bajo nivel de un vehículo no tripulado: la lectura de sus
+    sensores inerciales y de posicionamiento, la estimación de su estado, el cálculo de
+    las consignas de rumbo y velocidad y la generación de las señales que gobiernan los
+    actuadores. Las familias de hardware abierto más extendidas en investigación son las
+    de la serie Pixhawk, que admiten los firmware de código abierto PX4 y
+    ArduPilot~\cite{aliane2026}.
+ 
+  \item[Estimación de estado:] proceso mediante el cual un sistema de navegación
+    obtiene la posición, la velocidad y la orientación del vehículo a partir de medidas
+    de sensores que, por separado, son ruidosas o incompletas. Los autopilotos
+    actuales fusionan las medidas de giróscopos, acelerómetros, magnetómetro, barómetro
+    y receptor GNSS mediante un filtro de Kalman extendido (EKF), que además permite
+    detectar y descartar lecturas defectuosas de los sensores~\cite{ardupilot_ekf}.
+ 
+  \item[Armado y comprobaciones previas al armado:] el armado es la acción que habilita
+    la salida de potencia hacia los propulsores de un vehículo; mientras está
+    desarmado, los motores no responden a ninguna consigna. Antes de permitir el armado,
+    el autopiloto ejecuta un conjunto de comprobaciones de seguridad que verifican,
+    entre otros aspectos, la calibración de los sensores, la calidad de la señal GNSS,
+    el estado de la batería y la configuración de la radio, y bloquea el armado si
+    detecta algún problema~\cite{ardupilot_prearm}.
+ 
+  \item[Ordenador a bordo:] procesador de propósito general (\textit{companion
+    computer}) instalado junto al autopiloto y conectado a este mediante un enlace
+    serie o Ethernet. Recibe la telemetría del autopiloto y ejecuta las tareas de alto
+    nivel que exceden su capacidad, como el procesamiento de imágenes, la planificación
+    de trayectorias, el registro de datos o la coordinación con otros vehículos. Suele
+    tratarse de placas compactas basadas en arquitectura ARM con sistema operativo
+    Linux~\cite{ardupilot_companion} \cite{kumar2025} \\.
+ 
+  \item[Estación de control en tierra (GCS):] equipo y aplicación desde los cuales el
+    operador configura el vehículo, planifica las misiones, supervisa su estado en
+    tiempo real y envía comandos durante la operación. Las aplicaciones más extendidas
+    en el ecosistema Pixhawk son Mission Planner y QGroundControl, ambas de código
+    abierto~\cite{aliane2026}.
+ 
+  \item[Telemetría:] intercambio continuo, a través de un enlace inalámbrico, de la
+    información de estado del vehículo, como la posición, el rumbo, la velocidad, el
+    modo de operación o el nivel de batería, hacia la estación de control, junto con los
+    comandos enviados en sentido inverso. Este intercambio permite supervisar el
+    vehículo, modificar sus parámetros o su misión durante la operación y recuperar su
+    control ante una anomalía~\cite{aliane2026}.
+ 
+  \item[Posicionamiento GNSS y RTK:] los sistemas globales de navegación por satélite
+    (GNSS), como GPS, Galileo o GLONASS, determinan la posición del receptor a partir de
+    las señales de una constelación de satélites, con errores típicos de varios metros.
+    La técnica RTK (\textit{Real-Time Kinematic}) mejora esa precisión aplicando en
+    tiempo real las correcciones calculadas por una estación de referencia de posición
+    conocida, lo que reduce el error hasta el orden de centímetros~\cite{Cite13}.
+ 
+  \item[Redundancia de enlaces:] disposición de más de un canal de comunicación
+    independiente entre un vehículo y su estación de control, de modo que la pérdida de
+    uno de ellos no implique la pérdida total de supervisión y control del vehículo. La
+    redundancia es más eficaz cuando los canales emplean bandas de frecuencia y
+    tecnologías distintas, porque así es menos probable que una misma causa los
+    interrumpa a la vez~\cite{dunbabin2012}.
+ 
+  \item[Conciencia situacional:] capacidad de un operador para percibir los elementos
+    del entorno, comprender su significado y anticipar su evolución a corto
+    plazo~\cite{endsley1995}. En la operación de vehículos no tripulados, el operador no
+    observa el entorno de forma directa, por lo que su conciencia situacional depende de
+    la información que el vehículo le transmite, como imágenes o datos de sensores.
+ 
+  \item[Conjunto de datos de misión:] registro estructurado y con marca de tiempo de
+    los datos generados por un vehículo durante una misión, como su trayectoria, las
+    señales de control, el consumo energético o las imágenes capturadas. Permite
+    analizar la misión una vez finalizada y reproducirla para depurar o evaluar
+    algoritmos sin necesidad de repetir la prueba en campo~\cite{sears2024} \cite{Cite18} \\.
+ 
+\end{description}
 
-Las \nt{frases} deben ser cortas, y debe evitarse que el lector tenga que saltar
-constantemente entre partes de la tesis, lo que implica una exposición lineal
-clara, donde lo que se necesita ya ha sido explicado antes. Deben evitarse
-redundancias y por tanto cada concepto se exponen en un único lugar.
+% =====================================================================
+% Sección 2.3 Modelo del vehículo de superficie con propulsión diferencial
+% =====================================================================
 
-Todo aspecto circunstancial es irrelevante para la tesis, es decir, si se ha
-desarrollado en el laboratorio $X$, o en el curso $Y$, con el profesor $Z$, o
-en la empresa $W$, el nombre de funciones o clases en su código, etc., es
-información irrelevante para reproducir el experimento, y por lo tanto sobra.
-Numeración del documento
-
-La primera página de la tesis es la correspondiente a la introducción, así que
-ésta debe ser la página 1. Desde la introducción, hasta antes de la
-bibliografía, las unidades son ``Capítulos''. La bibliografía y anexos no se
-consideran capítulos, así que ya no continúan con la misma numeración de los
-capítulos (la paginación sí continua). Los índices, notación, glosario, etc. se
-numeran con números romanos en minúscula (i,ii,iii,iv,v,vi...) y antes del
-índice (portada, resúmenes, agradecimientos, hoja de evaluadores, etc.) las
-páginas no llevan numeración. 
-
-Esta plantilla LaTeX ya se ocupa de todo lo anterior.
-
-\subsection{Ecuaciones}
-
-Para citar \nt{ecuaciones} se utilizan paréntesis redondos, y no es necesario emplear la palabra ``ecuación''. Por ejemplo ``Introduciendo en (4.2) los resultados de (3.3) y (3.7) se obtiene ...''. La ecuación es parte del flujo de texto y no un objeto flotante, así que no pueden emplearse como figuras. Cuando se requiere la ecuación, allí se inserta \eqref{eq:QP}.
-
-\begin{equation}\label{eq:QP}
-    \begin{split}
-     \min_{\boldsymbol{x}_{k+1}, \boldsymbol{u}_{k}} \quad \boldsymbol{J}&= \left (\boldsymbol{x}_{k+1} - \boldsymbol{x}^{*}\right )^{T}{\boldsymbol{Q}}\left (\boldsymbol{x}_{k+1} - \boldsymbol{x}^{*}\right )\\&+\left ( \boldsymbol{u}_{k}- \boldsymbol{u}^{*} \right )^{T}\boldsymbol{R}\left ( \boldsymbol{u}_{k}- \boldsymbol{u}^{*} \right ) \\  \mathrm{s.a.} \quad \boldsymbol{x}_{k+1}&={\boldsymbol{A}}\boldsymbol{x}_{k} + {\boldsymbol{B}}_{k} \boldsymbol{u}_{k} + {\boldsymbol{d}}_{k} \\
-     \boldsymbol{G}\boldsymbol{u}_{k} &\geq \boldsymbol{W}
-    \end{split}
+\section{Modelo del vehículo de superficie con propulsión diferencial}
+\label{sec:modelo_usv}
+ 
+El movimiento de un vehículo marino se describe mediante dos marcos de
+referencia~\cite{fossen2021}: un marco inercial local de tipo NED
+(\textit{North--East--Down}), fijo a la superficie terrestre, y un marco solidario al
+vehículo, con el eje $x$ hacia la proa, el eje $y$ hacia estribor y el eje $z$ hacia
+abajo (Figura~\ref{fig:marcos_usv}). En un vehículo de superficie que navega a baja
+velocidad, la arfada, el balanceo y el cabeceo son pequeños, por lo que su movimiento
+se describe en el plano horizontal con tres grados de libertad: avance, deriva y
+guiñada~\cite{fossen2021} \cite{jin2025}. La posición y el rumbo del vehículo en el marco
+inercial, $\boldsymbol{\eta}$, y sus velocidades en el marco del cuerpo,
+$\boldsymbol{\nu}$, se relacionan mediante
+\begin{equation}
+  \dot{\boldsymbol{\eta}} = \mathbf{R}(\psi)\,\boldsymbol{\nu},
+  \qquad
+  \boldsymbol{\eta} = \begin{bmatrix} x \\ y \\ \psi \end{bmatrix},
+  \quad
+  \boldsymbol{\nu} = \begin{bmatrix} u \\ v \\ r \end{bmatrix},
+  \quad
+  \mathbf{R}(\psi) =
+  \begin{bmatrix}
+    \cos\psi & -\sin\psi & 0 \\
+    \sin\psi &  \cos\psi & 0 \\
+    0 & 0 & 1
+  \end{bmatrix}
+  \label{eq:cinematica}
 \end{equation}
-
-También puede utilizar el editor de ecuaciones en línea.
-
-\subsection{Figuras}
-
-Para el almacenamiento de imágenes existen dos tipos de formato: las imágenes
-raster y las imágenes vectoriales.\index{imagen!raster}
-
-Las imágenes raster son representadas por una rejilla de píxeles, en donde cada
-píxel tiene un valor que representa al nivel de gris o el color. La
-discretización espacial es ineludible, y la única forma de obtener buena
-calidad es empleando tamaños grandes de la imagen que conduzcan a resoluciones
-de al menos 300 puntos por pulgada en la impresión, lo que conlleva a archivos
-de documentos de varios megabytes. Dentro de los formatos para almacenar
-imágenes raster existen algunos con pérdida (como el JPEG) que producen en
-imágenes sintéticas, como diagramas, estructuras ruidosas que dan una
-apariencia de baja calidad a las figuras. Otros formatos (como PNG, BMP, TIFF o
-GIF) no tiene pérdidas de información, pero los algoritmos de compresión no
-pueden reducir el tamaño de las imágenes con los mismos factores de reducción
-que los formatos con pérdidas. Este tipo de formatos debe utilizarse únicamente
-para fotografías o capturas de escenas reales con cámaras digitales.
-
-\index{imagen!vectorial}
-Las imágenes vectoriales \textbf{deben} ser empleadas en todo tipo de
-diagrama. En ellas no se almacenan píxeles, sino las estructuras geométricas
-que componen la figura como círculos (representado por posicion de su centro y
-su radio), rectángulos (representados por sus esquinas), líneas, texto, etc. La
-mayoría de programas para elaborar este tipo de diagramas, como Inkscape, XFig,
-OpenOffice.org Draw, MS Visio, Adobe Illustrator, etc. proveen varios formatos
-vectoriales que pueden ser insertados tanto en LaTeX como en OpenOffice.org
-Writer (o MS Word). Los formatos más empleados son los llamados metafiles, que
-incluyen al WMF, EMF. En LaTeX se utiliza por lo general EPS o PDF, un ejemplo de ello es la Fig. \ref{fig:MMC}.
-
-No debe cometerse el error de generar una imagen vectorial a partir de una
-imagen raster, pues una vez realizada la discretización espacial no es posible
-reconstruir los elementos geométricos que componen la imagen. Por ello, no
-tiene ningún sentido generar un archivo EPS o WMF a partir de una imagen ya
-almacenada en BMP, JPG, o PNG, pues lo único que ocurrirá es que se inserta la
-figura raster tal cual en la imagen vectorial, sin implicar ninguna ganancia en
-la calidad.
-
-
-\begin{figure}[htb]
+donde $x$ e $y$ son las coordenadas norte y este, $\psi$ es el rumbo, $u$ y $v$ son las
+velocidades de avance y de deriva, y $r$ es la velocidad angular de guiñada. Una
+velocidad de deriva no nula, provocada por el viento o las corrientes, desplaza al
+vehículo lateralmente respecto a su rumbo.
+ 
+\begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.7\hsize]{MMC}
-  \caption{Ejemplo de imagen vectorial.}
-  \label{fig:MMC}
+  \includegraphics[width=0.55\textwidth]{fig/fig_marcos_usv_jin2025.png}
+  \caption{Marco de referencia inercial y marco del cuerpo de un USV de tipo
+    catamarán~\cite{jin2025}.}
+  \label{fig:marcos_usv}
 \end{figure}
-
-\subsection{Tablas}
-
-También se pueden utilizar tablas, ¡Crearlas es muy fácil!. Puede usar, por ejemplo, el ``creador de tablas online'' \cite{tablesgenerator}.
-
-% Tabla generada con el plugin Excel2Latex
-\begin{table}[H] % Importante el H
-	\centering
-	\caption{Ejemplo de tablas.}
-	\begin{tabular}{ccc}
-		\hline
-		\textbf{Columna 1} & \textbf{Columna 2} & \textbf{Columna 3} \bigstrut\\
-		\hline
-		$\omega$ & $\nu$ & $\delta$ \bigstrut[t]\\
-		$\Phi$ & $\Theta$ & $\varSigma$ \\
-		$\Sigma$ & $\epsilon$ & $\psi$ \\
-		\hline
-	\end{tabular}
-	\label{tab:tabla-1}
-\end{table}
-
-\subsection{Pseudocódigo}
-
-El pseudocódigo sirve para describir algoritmos de manera detallada y comprensible, sin preocuparse por la sintaxis de un lenguaje de programación específico. Esto permite que los lectores comprendan el flujo lógico del algoritmo y cómo se implementaría en la práctica, sin necesidad de conocer un lenguaje de programación en particular. Además, el pseudocódigo facilita la comunicación de ideas entre escritor y lectores, ya que se centra en los aspectos conceptuales y algorítmicos en lugar de en detalles específicos de implementación.
-
-\begin{algorithm}
-\caption{Representación de pseudocódigo de alto nivel de algún algoritmo.}\label{alg:cap}
-    \begin{algorithmic}
-        \State Calcular un punto inicial factible $u_{0}$.
-        \State Definir $\mathcal{V}_{0} = \emptyset $.
-        \State $i \gets 0$.
-        \While {\textit{true}}
-            \If{$\Delta p_{i} = 0$}
-                \If{todos los elementos de $\lambda_{i} \geq 0$}
-                    \State{$u^{*} \gets u_{i}$}.
-                    \State \textbf{break}.
-                \Else
-                    \State Remover de $\mathcal{V}_{i}$ la restricción con el mínimo $\lambda_{i}$. 
-                    \State $u_{i+1} \gets u_{i}$.
-                    \State $\mathcal{V}_{i+1} \gets \mathcal{V}_{i}$.
-                \EndIf
-            \Else
-                \State $u_{i+1} \gets u_{i} + \alpha_{i}\Delta p_{i}$.
-                \State Crear $\mathcal{V}_{i+1}$ añadiendo la nueva restricción activa.
-            \EndIf
-            \State $i \gets i+1$.
-        \EndWhile
-    \end{algorithmic}
-\end{algorithm}
-
-\subsection{Referencias bibliográficas}
-
-\index{referencias}\index{BibTeX}
-Todo concepto o idea tomado de otros autores contar con la respectiva
-referencia. En redacción técnica de ingeniería rara vez se utiliza la cita
-textual, así que es necesario reformular las ideas y conceptos con palabras
-propias. En ingeniería electrónica se utilizan los formatos de referencia de la
-IEEE o la ACM, que son numéricos, encerrados entre paréntesis cuadrados (por
-ejemplo, ``En \cite{Davis1963} se propuso un nuevo algoritmo'', o ``En
-\cite{ProakisManolakis1998} los autores proponen tomar las ventajas de los
-algorimos presentados en \cite{Oppenheim1998,Roberts2005,Haykin2001} por medio
-del método de Newton \cite{Burrus1998} conocido en el área de optimización
-lineal.''). La referencia es parte de las frases, así que si la frase termina
-con la referencia para indicar la idea, ésta debe estar antes del punto final o
-demás signos de puntuación: ``La capacidad de memoria también sigue una Ley
-similar a la de Moore \cite{Octave}. Los siguientes son los aspectos a tomar en
-cuenta en el diseño del sistema \cite{Lindner2002}:''
-
-Se recomienda utilizar BibTeX para administrar las referencias bibliográficas.
-
+ 
+La dinámica en el plano horizontal se expresa mediante el modelo vectorial de
+Fossen~\cite{fossen2021}:
+\begin{equation}
+  \mathbf{M}\,\dot{\boldsymbol{\nu}} + \mathbf{C}(\boldsymbol{\nu})\,\boldsymbol{\nu}
+  + \mathbf{D}(\boldsymbol{\nu})\,\boldsymbol{\nu} = \boldsymbol{\tau}
+  \label{eq:fossen}
+\end{equation}
+donde $\mathbf{M}$ es la matriz de masa e inercia, que incluye la masa añadida del agua
+que el casco arrastra al acelerar; $\mathbf{C}(\boldsymbol{\nu})$ agrupa los efectos
+centrípetos y de Coriolis; $\mathbf{D}(\boldsymbol{\nu})$ representa el amortiguamiento
+hidrodinámico; y $\boldsymbol{\tau}$ es el vector de fuerzas y momento de los
+propulsores. En un vehículo sin timón con dos propulsores paralelos separados una
+distancia $2d$, este vector resulta~\cite{yoon2024}
+\begin{equation}
+  \boldsymbol{\tau} =
+  \begin{bmatrix} T_1 + T_2 & 0 & (T_1 - T_2)\,d \end{bmatrix}^{T}
+  \label{eq:tau}
+\end{equation}
+donde $T_1$ y $T_2$ son los empujes de babor y de estribor. La suma de ambos produce el
+avance y su diferencia genera el momento de guiñada. Al no existir ningún actuador que
+genere fuerza en deriva, el vehículo es subactuado~\cite{penaqueralta2020}, y su deriva
+solo puede corregirse de forma indirecta modificando el rumbo. En la práctica, el
+autopiloto no calcula los empujes a partir del modelo, sino que combina una consigna de
+avance y una de giro para obtener la orden de cada motor, configuración conocida como
+dirección diferencial o \textit{skid steering}~\cite{kumar2025} \cite{ardupilot_motores} \\.
+ 
+Por otra parte, la estabilidad transversal de una embarcación ante la incorporación de
+carga se evalúa mediante la altura metacéntrica $GM$, distancia entre el centro de
+gravedad $G$ y el metacentro transversal $M$, punto en torno al cual oscila el empuje de
+flotación cuando la embarcación se inclina ligeramente~\cite{biran2014}:
+\begin{equation}
+  GM = KB + \frac{I_T}{\nabla} - KG,
+  \qquad
+  KG = \frac{m_0\,KG_0 + \sum_{j} m_j\,z_j}{m_0 + \sum_{j} m_j}
+  \label{eq:gm}
+\end{equation}
+donde $K$ es la quilla, $KB$ la altura del centro de carena, $I_T$ el momento de
+inercia transversal del área de flotación, $\nabla$ el volumen desplazado y $KG$ la
+altura del centro de gravedad, que se recalcula a partir de la embarcación vacía
+($m_0$, $KG_0$) y de la masa $m_j$ y altura $z_j$ de cada componente añadido. La
+embarcación es estable si $GM > 0$; en los cascos de tipo catamarán, la separación entre
+cascos aumenta notablemente $I_T$ y, con ello, la estabilidad~\cite{biran2014}.
+ 
