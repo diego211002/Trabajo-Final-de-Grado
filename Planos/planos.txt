@@ -1,0 +1,1 @@
+Esta carpeta contiene los planos realizados para la integración de partes en el casco de los USVs. 
