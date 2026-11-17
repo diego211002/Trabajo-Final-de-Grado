@@ -1,5 +1,5 @@
 \chapter{Metodología}
-\label{ch:metodologia}
+\label{cap:metodologia}
 
 \section{Definición de la metodología}
 
@@ -46,6 +46,7 @@ que estas son las que corresponden a un sistema de ingeniería que aún no ha si
 el cual se debe decidir, qué solución implementar por módulo. 
 
 \subsection{Metodología Modelo en V}
+\label{subsec:modelo_v}
 
 El Modelo en V (V-Model) es una metodología de diseño en ingeniería que vincula de forma explícita 
 cada etapa de definición y diseño de un sistema con una etapa de verificación equivalente. Fue 
@@ -122,7 +123,7 @@ que arranca la rama izquierda del Modelo en V.
 La lista de necesidades se construyó a partir de una entrevista formal realizada al equipo
 del grupo MACS responsable del proyecto, en lugar de partir de una descripción del problema
 previamente redactada por los profesores, con el fin de evitar el sesgo del problema percibido.
-La guía de entrevista y las respuestas obtenidas se incluyen en el Apéndice [A]. Siguiendo el
+La guía de entrevista y las respuestas obtenidas se incluyen en el Apéndice \ref{ap:entrevista}. Siguiendo el
 procedimiento de UE, las afirmaciones de la entrevista se interpretaron primero como una
 lista inicial de necesidades individuales. Esta lista se organizó después en una jerarquía
 de necesidades primarias y secundarias, donde cada necesidad primaria generaliza un grupo de
@@ -222,20 +223,28 @@ necesidad no lo especificaba, o para confirmar que el valor ya declarado por el 
 técnicamente alcanzable con la tecnología disponible.
 
 \begin{itemize}
-    \item Posicionamiento(M4). GNSS estándar sin corrección da 3–5 m \cite{Cite13}, 
-    insuficiente para el marginal de $\leq$2 m. RTK da 1–2 cm \cite{Cite13}, y un sistema comparable con 
-    RTK y percepción LIDAR logró en campo 0.046 m de error promedio y 0.12 m máximo \cite{Cite9}, el cual 
-    respalda 0.5 m como ideal de M4.
-    \item Comunicación (M5, M8). El canal principal entre los USV y 
-    la estación base es el enlace Ubiquiti airMAX, y el canal redundante lo forman los radios 
-    RFD900x ya presentes en la plataforma, que alcanzan $\geq$40~km en línea de vista y hasta 
-    500~kbps [33], por lo que el ideal de M8 (1000~m) es alcanzable con holgura. Ninguna de las 
-    hojas de datos publica la latencia extremo a extremo, por lo que M5 se mide de forma 
-    empírica. \cite{Cite10}.
+    \item Posicionamiento (M4). Esta métrica se define como el error transversal entre la trayectoria planificada 
+    y la recorrida (Ecuación~\ref{eq:error_transversal}), calculado a partir de la posición 
+    que estima el propio autopiloto. Como ambas trayectorias se expresan en el mismo marco de referencia, 
+    el error absoluto del receptor GNSS no interviene en el cálculo, y M4 refleja el desempeño del guiado 
+    y del control del vehículo. Con un autopiloto Pixhawk y GNSS estándar se han reportado errores de 
+    seguimiento de hasta 2,5~m, concentrados en los giros \cite{sotelo2023}, lo que indica que el valor 
+    marginal de 2~m es exigente pero alcanzable. La precisión absoluta del GNSS determina, en cambio, 
+    la georreferenciación de los datos: un receptor estándar ofrece del orden de 2~m \cite{Cite29}, mientras 
+    que la técnica RTK la reduce a 1--2~cm \cite{Cite13}. Un sistema comparable con RTK logró en campo 
+    errores de 0,046~m de promedio y 0,12~m de máximo \cite{Cite9}, lo que indica que el valor ideal 
+    de 0,5~m requeriría, previsiblemente, posicionamiento RTK y un ajuste fino del guiado.
+    \item Comunicación (M5, M8). Se define un canal principal de tipo WiFi entre los 
+    USV y la estación base y un enlace de radio como canal redundante (Tabla~\ref{tab:necesidades}). Los enlaces 
+    de radio en bandas inferiores a 1~GHz alcanzan decenas de kilómetros en línea de 
+    vista \cite{gogendeau2024} \cite{Cite10}, por lo que el alcance de comunicación (M8) queda determinado por el 
+    canal principal. Para enlaces WiFi sobre USV se han reportado en campo alcances de entre 0,5 y 1~km \cite{sears2024}: el valor marginal de 100~m es alcanzable con holgura, mientras que el ideal de 1000~m se 
+    sitúa en el límite de lo reportado y depende de la altura de las antenas. Ninguna de las fuentes consultadas 
+    publica la latencia extremo a extremo de estos enlaces, por lo que M5 se mide de forma empírica.
     \item Latencia de software (M3, M5). Un estudio que compara MAVROS–MAVLink frente a DDS 
     nativo en vehículos autónomos reporta diferencias de latencia del orden de cientos de microsegundos, 
-    muy por debajo de los marginales de 500 ms y de 1 s, confirmando que ambos son 
-    alcanzables con el stack ROS2 ya definido \cite{Cite12}.
+    muy por debajo de los marginales de 500 ms y de 1 s, confirmando que ambos umbrales son alcanzables con 
+    cualquiera de las dos vías de integración entre ROS~2 y el autopiloto \cite{Cite12}.
 \end{itemize}
 
 Siguiendo el procedimiento oficial de UE \cite{Cite11} cada necesidad se 
@@ -273,16 +282,16 @@ constituye la lista de especificaciones del sistema.
 \hline
 \endlastfoot
  
-M1 & 1,3 & Tasa de pruebas funcionales superadas & 5 & \% & $\geq$90 & $\geq$95 & Mínimo 10 ciclos por vehículo (arranque, comunicación autopiloto--ordenador a bordo, respuesta a comandos), documentado en el reporte técnico de integración. \\ \hline
+M1 & 1,3 & Tasa de pruebas funcionales superadas & 5 & \% & $\geq$90 & $\geq$95 & Mínimo 10 ciclos por vehículo (arranque, comunicación entre el autopiloto y ROS~2, respuesta a comandos), documentado en el reporte técnico de integración. \\ \hline
 M2 & 2,7 & Porcentaje de disponibilidad de sensores & 5 & \% & $\geq$90 & $\geq$95 & Medida durante misiones continuas de al menos 30 min en laboratorio; documentada en el set de datos de prueba. \\ \hline
 M3 & 2,7 & Latencia de adquisición & 5 & ms & $\leq$500 & $\leq$500 & Medida por muestra durante las mismas misiones de 30 min; documentada en el set de datos de prueba. \\ \hline
-M4 & 1 & Error de trayectoria & 5 & m & $\leq$2 & $<$0.5 & Medido en misiones de al menos 20 min con dos USV ejecutando waypoints en un entorno acuático real; registrado en logs de misión y trayectorias. \\ \hline
-M5 & 5 & Latencia de comunicación & 5 & s & $\leq$1 & $\leq$0.8 & Medida durante las mismas misiones de 20 min de coordinación por waypoints; documentada en el reporte técnico de comunicaciones y navegación. \\ \hline
+M4 & 1 & Error de trayectoria & 5 & m & $\leq$2 & $<$0,5 & Error transversal (Ec.~\ref{eq:error_transversal}) calculado con la posición estimada por el autopiloto, en misiones de al menos 20~min con dos USV ejecutando \textit{waypoints} en un entorno acuático real; registrado en logs de misión. \\ \hline
+M5 & 5 & Latencia de comunicación & 5 & s & $\leq$1 & $\leq$0,8 & Medida durante las mismas misiones de 20 min de coordinación por waypoints; documentada en el reporte técnico de comunicaciones y navegación. \\ \hline
 M6 & 1,3 & Tasa de éxito de misión & 5 & \% & $\geq$85 & $=$100 & Evaluada en al menos 5 misiones independientes en un entorno acuático real, con al menos 5 puntos de muestreo por USV por misión; documentada en el reporte de análisis de resultados. \\ \hline
 M7 & 4 & Peso de componentes añadidos & 5 & kg & $\leq$5 & $\leq$4 & Pesaje físico de todos los componentes antes de integración. \\ \hline
-M8 & 5 & Alcance de comunicación & 5 & m & $\geq$100 & $\geq$1000 & Pruebas de campo a distancia creciente hasta pérdida de enlace. \\ \hline
-M9 & 2,7 & Frecuencia de captura de imágenes & 2 & Hz & $\approx$1 & $\approx$2 & Marca de tiempo de los cuadros capturados. \\ \hline
-M10 & 6 & Número de mecanismos de recuperación & 5 & \# & $\geq$3 & $\geq$4 & Desconexión intencional de cada canal, confirmando la conmutación (\textit{failover}). \\ \hline
+M8 & 5 & Alcance de comunicación & 5 & m & $\geq$100 & $\geq$1000 & Pruebas de campo del canal principal a distancia creciente hasta pérdida de enlace. \\ \hline
+M9 & 2,7 & Frecuencia de captura de imágenes & 3 & Hz & $\approx$1 & $\approx$2 & Marca de tiempo de los cuadros capturados. \\ \hline
+M10 & 6 & Número de mecanismos de recuperación & 5 & \# & $\geq$3 & $\geq$4 & Desconexión intencional de cada canal, confirmando que la supervisión y el control se mantienen por los canales restantes. \\ \hline
 M11 & 4 & Modificación del casco y Estabilidad (GM) & 5 & Bin. & Sí & No & Inspección del casco tras la integración y cálculo de altura metacéntrica (GM) del casco cargado vs.\ vacío.\\ \hline
 M12 & 4 & Accesibilidad de conectores & 4 & Bin. & Sí & Sí & Verificación de acceso físico sin desmontaje mayor. \\ \hline
 
@@ -290,18 +299,19 @@ M12 & 4 & Accesibilidad de conectores & 4 & Bin. & Sí & Sí & Verificación de 
 \setlength{\tabcolsep}{6pt}
 \normalsize
 
-Para M4 y M8, el valor objetivo ya había sido establecido directamente por el cliente durante
-la entrevista (Apéndice [A]). La investigación, en ambos casos, solo
-confirmó que la tecnología seleccionada puede alcanzarlo con holgura. Para M3 y M5, en
-cambio, ni la entrevista ni la necesidad de origen incluían un valor numérico, por lo que la
+Para M4 y M8, el valor objetivo ya había sido establecido directamente por el cliente durante la entrevista 
+(Apéndice~\ref{ap:entrevista}). En el caso de M8, la investigación confirmó que el valor marginal se alcanza 
+con holgura y que el ideal depende de la altura de las antenas, y en el caso de M4, que el valor marginal es 
+exigente pero alcanzable con el guiado 
+del autopiloto, siempre que la métrica se evalúe como error de seguimiento y no como precisión absoluta de 
+posición. Para M3 y M5, en cambio, ni la entrevista ni la necesidad de origen incluían un valor numérico, por lo que la
 investigación buscó establecerlo, y en ambos casos se confirmó la viabilidad del umbral definido
-por el equipo mediante literatura sobre latencia en ROS2.
+por el equipo mediante literatura sobre latencia en ROS~2.
 
 Las métricas M7, M9, M10, M11 y M12
 tampoco requirieron ningún tipo de investigación adicional, ya que el peso máximo de componentes,
 la frecuencia de imágenes, el número de mecanismos de recuperación y las dos condiciones
-binarias fueron indicados directamente por el equipo de MACS durante la entrevista (Apéndice
-[A]), aunque esos valores se registran únicamente en la Tabla \ref{tab:metricas} y
+binarias fueron indicados directamente por el equipo de MACS durante la entrevista (Apéndice~\ref{ap:entrevista}), aunque esos valores se registran únicamente en la Tabla \ref{tab:metricas} y
 no como necesidades independientes en la Tabla \ref{tab:necesidades}. Las métricas M1, M2 y M6, por su parte,
 no cuentan con un valor equivalente ni en la entrevista ni en la literatura consultada, ya que
 se establecieron como criterio de aceptación definido por el propio equipo de desarrollo del
@@ -326,6 +336,7 @@ resume en la Figura \ref{fig:matriz}.
 \newpage
 
 \section{Selección del concepto ganador}
+\label{sec:seleccion_concepto}
 
 Siguiendo el proceso de generación de conceptos de Ulrich y Eppinger \cite{Cite11}, la primera etapa consiste en dividir el
 problema de diseño en subproblemas más manejables mediante una descomposición funcional.
@@ -372,24 +383,22 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
 \begin{itemize}
 
     \item \textbf{Pixhawk 6X} \\
-    \textit{Justificación:} Es el controlador de vuelo ya integrado y en uso en la plataforma USV
-    del grupo MACS, corriendo ArduPilot (ArduRover) sobre el stack ROS2/MAVROS ya definido.
-    Ofrece redundancia triple de IMU con dominios de sensores completamente aislados (buses y
-    alimentación separados) y soporte Ethernet nativo. Representa
-    además la opción de menor riesgo de integración, al no requerir cambios de firmware,
-    drivers ni configuración existente \cite{Cite14}. \\
+    \textit{Justificación:} Autopiloto del estándar Pixhawk compatible con ArduPilot Rover, con redundancia 
+    triple de IMU en dominios aislados, que aumenta la robustez de la estimación de estado, y Ethernet nativo, 
+    que permite conectarlo directamente a una red local \cite{Cite14}. Concepto referenciado de forma interna por 
+    la experiencia previa del equipo. \\
 
     \item \textbf{Pixhawk 6C} \\
-    \textit{Justificación:} Alternativa dentro de la misma familia y estándar Pixhawk, compatible
-    con ArduPilot 4.3+ y con el stack ya definido. Procesador STM32H743 a 480 MHz, redundancia
-    doble de IMU (ICM-42688-P + BMI088) con 34.6 g en carcasa plástica \cite{Cite14}. \\
+    \textit{Justificación:} Alternativa dentro de la misma familia y estándar Pixhawk, compatible con el firmware 
+    ArduPilot 4.3 o superior y con la integración con ROS~2. Procesador STM32H743 a 480 MHz, redundancia
+    doble de IMU (ICM-42688-P + BMI088) con 34,6 g en carcasa plástica \cite{Cite14}. \\
 
     \item \textbf{Pix32 v6} \\
     \textit{Justificación:} Variante modular de la familia Pixhawk 6C, con controlador y placa
     base separados y conectados por un conector de 100 pines. Mismo procesador STM32H743
     a 480 MHz, redundancia doble de IMU, 36 g de peso (solo módulo
     FC). Es la opción más económica y compacta de la familia Pixhawk-estándar
-    si se prioriza costo sobre redundancia \cite{Cite14} \cite{Cite15}. \\
+    si se prioriza el coste sobre la redundancia \cite{Cite14} \cite{Cite15}. \\
 
 \end{itemize}
 
@@ -398,7 +407,7 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
 \begin{itemize}
 
     \item \textbf{Raspberry Pi 4 (8 GB)} \\
-    \textit{Justificación:} SBC de bajo costo y bajo consumo (3--8 W), con
+    \textit{Justificación:} SBC de bajo coste y bajo consumo (3--8 W), con
     soporte nativo de ROS 2 en ARM64. Adecuado para bridging de sensores,
     teleoperación y pipelines de percepción ligeros. No cuenta con acelerador de IA dedicado,
     lo que limita el procesamiento denso de datos LIDAR/cámara en tiempo real y podría
@@ -406,7 +415,7 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
     pipeline de percepción resulta exigente \cite{Cite16}. \\
 
     \item \textbf{Raspberry Pi 5 (8 GB)} \\
-    \textit{Justificación:} Mejora de CPU respecto al Pi 4 (Cortex-A76 a 2.4 GHz), mismo
+    \textit{Justificación:} Mejora de CPU respecto al Pi 4 (Cortex-A76 a 2,4 GHz), mismo
     ecosistema ARM64/ROS 2, con la opción de un Hailo-8L (AI Kit, 13 TOPS) para inferencia
     ligera con consumo de 5--15 W. Sigue siendo limitado frente a
     modelos de percepción pesados sin el kit adicional de IA \cite{Cite16}. \\
@@ -431,13 +440,13 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
 \begin{itemize}
   \item \textbf{LIDAR SLAMTEC RPLIDAR A3} \\
   \textit{Justificación:} LIDAR 2D de barrido 360°, alcance $\approx$25\,m, $\approx$170\,g y 
-  $\approx$\$300, con drivers ROS2 nativos y amplio uso en prototipado académico. Es la opción 
+  $\approx$\$300, con drivers ROS~2 nativos y amplio uso en prototipado académico. Es la opción 
   más económica y ligera, aunque su clasificación IP20 implica que carece de protección contra 
   agua y polvo, por lo que en un USV requeriría una carcasa adicional \cite{Cite17}. \\
 
   \item \textbf{LIDAR Livox Mid-360} \\
   \textit{Justificación:} LIDAR 3D de campo de visión 360°$\times$59°, $\approx$265\,g, 
-  $\approx$\$749, con clasificación IP67 (resistente a agua y polvo) y soporte ROS2 maduro. 
+  $\approx$\$749, con clasificación IP67 (resistente a agua y polvo) y soporte ROS~2 maduro. 
   Es considerado un estándar de facto para LIDAR 3D de bajo costo en robots móviles, y su 
   hermeticidad lo hace naturalmente más adecuado para operación a la intemperie sobre agua que 
   el RPLIDAR A3 \cite{Cite17}. \\
@@ -473,9 +482,9 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
   con experiencia previa en su integración y uso. 
 
   \item \textbf{Registro con rosbag2 (formato SQLite3)} \\
-  \textit{Justificación:} Herramienta estándar de ROS2 para grabación y reproducción de datos de 
+  \textit{Justificación:} Herramienta estándar de ROS~2 para grabación y reproducción de datos de 
   todos los tópicos del sistema, con almacenamiento por defecto en una base de datos SQLite3. Es 
-  la opción de menor esfuerzo de integración al trabajar de forma nativa con la arquitectura ROS2 
+  la opción de menor esfuerzo de integración al trabajar de forma nativa con la arquitectura ROS~2 
   del proyecto, y permite reproducir misiones completas para depuración y análisis posterior \cite{Cite18}. \\
 
 
@@ -484,7 +493,7 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
   sensores IoT, monitoreo en tiempo real), con consultas y agregaciones más eficientes que una 
   base de datos genérica para este tipo de datos. Es una alternativa más robusta a rosbag2 cuando 
   se prioriza la consulta estructurada de datos históricos sobre la reproducción exacta de 
-  sesiones ROS2, aunque añade complejidad de integración al no ser nativa de ROS2 \cite{Cite19}. \\
+  sesiones ROS~2, aunque añade complejidad de integración al no ser nativa de ROS~2 \cite{Cite19}. \\
 
 \end{itemize}
 
@@ -494,7 +503,7 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
 
   \item \textbf{Módulo de potencia Ultra-Precise I2C (I2C-INA-BM)} \\
   \textit{Justificación:} Módulo de medición de voltaje y corriente basado en el IC Texas Instruments 
-  INA228, con resolución de 20 bits, precisión de $\pm$0.1\% en voltaje y $\pm$2\% en corriente, 
+  INA228, con resolución de 20 bits, precisión de $\pm$0,1\% en voltaje y $\pm$2\% en corriente, 
   comunicación I2C, 4\,g de peso y compatibilidad nativa (sin calibración) con firmware ArduPilot, el 
   cual es compatible con el autopiloto Pixhawk 6X ya seleccionado. Cubre ampliamente los rangos de 
   voltaje y corriente típicos de un USV de este tamaño, con muy bajo impacto en peso y consumo \cite{Cite21}. \\
@@ -512,15 +521,15 @@ posible de alternativas, que se evaluarán formalmente en la etapa de selección
 \begin{itemize}
 
   \item \textbf{Batería LiPo TATTU} \\
-  \textit{Justificación:} Batería de polímero de litio de 6 celdas (22.2\,V nominal), 4500\,mAh de 
-  capacidad, tasa de descarga continua de 25C, con 
-  conector estándar XT60. Su alta tasa de descarga cubre con holgura los picos de corriente de los 
-  motores de propulsión, y su tensión/capacidad son adecuadas para la autonomía objetivo del USV \cite{Cite22}. \\
+  \textit{Justificación:} Batería de polímero de litio de 6 celdas (22,2~V nominal) y 4500~mAh, 
+  con una energía nominal de unos 100~Wh, tasa de descarga continua de 25C y conector estándar XT60. 
+  Su capacidad, en un formato compacto, permite alimentar el hardware embarcado con autonomía suficiente para las 
+  misiones previstas, y su alta tasa de descarga ofrece un amplio margen frente a picos de consumo \cite{Cite22}. \\
 
   \item \textbf{Batería LiPo genérica (química estándar de mercado).} \\
   \textit{Justificación:} Alternativa de referencia dentro de la misma química (polímero de litio), 
   considerando otras marcas/capacidades disponibles comercialmente. Mantiene las ventajas típicas de 
-  LiPo (alta tasa de descarga, bajo costo relativo, amplia disponibilidad) como punto de comparación 
+  LiPo (alta tasa de descarga, bajo coste relativo, amplia disponibilidad) como punto de comparación 
   frente al modelo TATTU específico y frente a otras químicas de litio \cite{Cite23}. \\
 
   \item \textbf{Batería Li-ion cilíndrica} \\
@@ -654,7 +663,7 @@ M7 & Peso de componentes añadidos ($\leq$5\,kg) & 5 & 0 & 0 & $-$ & 0 \\
 \hline
 M8 & Alcance de comunicación ($\geq$100\,m) & 5 & 0 & 0 & 0 & 0 \\
 \hline
-M9 & Frecuencia de imágenes ($\approx$1\,Hz) & 2 & 0 & 0 & 0 & + \\
+M9 & Frecuencia de imágenes ($\approx$1\,Hz) & 3 & 0 & 0 & 0 & + \\
 \hline
 M10 & Mecanismos de recuperación ($\geq$3) & 5 & 0 & + & + & 0 \\
 \hline
@@ -691,13 +700,13 @@ cuya definición es evidente a partir de su nombre:
 
 \begin{itemize}
   \item \textbf{M1/M6 -- Tasa de éxito en pruebas funcionales y de misión:} combina el
-  porcentaje de ciclos de arranque, comunicación y respuesta a comandos superados por el
-  autopiloto y el ordenador a bordo, con el porcentaje de misiones de muestreo completadas
+  porcentaje de ciclos de arranque, comunicación y respuesta a comandos superados por cada vehículo, 
+  con el porcentaje de misiones de muestreo completadas
   satisfactoriamente según los puntos de muestreo planificados.
   \item \textbf{M2 -- Disponibilidad de sensores:} porcentaje del tiempo de misión en que
   los sensores entregan datos válidos sin interrupciones.
   \item \textbf{M3 -- Latencia de adquisición:} tiempo transcurrido entre la captura física
-  del dato y su disponibilidad en el pipeline de procesamiento (ROS2).
+  del dato y su publicación en ROS~2.
   \item \textbf{M5 -- Latencia de comunicación:} tiempo que tarda un mensaje de coordinación en 
   transmitirse entre la estación base y cada USV durante la navegación por waypoints. Dado que la 
   arquitectura de comunicaciones es en estrella, todo intercambio de coordinación entre los USV 
@@ -706,8 +715,8 @@ cuya definición es evidente a partir de su nombre:
   enlace entre los USV y la estación base.
   \item \textbf{M9 -- Frecuencia de captura de imágenes:} número de cuadros capturados por
   segundo por el sistema de percepción.
-  \item \textbf{M10 -- Mecanismos de recuperación:} cantidad de canales redundantes
-  disponibles para recuperar el sistema ante una falla de comunicación o control.
+  \item \textbf{M10 -- Mecanismos de recuperación:} cantidad de mecanismos independientes disponibles 
+  para recuperar el vehículo ante un fallo de comunicación o de control.
   \item \textbf{M11 -- Modificación del casco y estabilidad (GM):} necesidad de modificar
   el casco al integrar el nuevo hardware y su efecto sobre la altura metacéntrica de la
   embarcación.
@@ -744,18 +753,18 @@ combinación, así como el total ponderado y el lugar obtenido por cada una.
 \hline
 \endhead
 
-M1/M6 & Tasa de éxito en pruebas funcionales y de misión & 17.86\% & 3 & 0.54 & 3 & 0.54 & 4 & 0.71 \\ \hline
-M2 & Disponibilidad de sensores & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\ \hline
-M3 & Latencia de adquisición & 8.93\% & 3 & 0.27 & 3 & 0.27 & 4 & 0.36 \\ \hline
-M4 & Error de trayectoria & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\ \hline
-M5 & Latencia de comunicación & 8.93\% & 3 & 0.27 & 3 & 0.27 & 5 & 0.45 \\ \hline
-M7 & Peso de componentes añadidos & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\ \hline
-M8 & Alcance de comunicación & 8.93\% & 5 & 0.45 & 5 & 0.45 & 5 & 0.45 \\ \hline
-M9 & Frecuencia de imágenes & 3.57\% & 3 & 0.11 & 3 & 0.11 & 4 & 0.14 \\ \hline
-M10 & Mecanismos de recuperación & 8.93\% & 3 & 0.27 & 4 & 0.36 & 3 & 0.27 \\ \hline
-M11 & Modificación del casco y GM & 8.93\% & 3 & 0.27 & 3 & 0.27 & 3 & 0.27 \\ \hline
-M12 & Accesibilidad de conectores & 7.13\% & 3 & 0.21 & 3 & 0.21 & 3 & 0.21 \\ \hline
-Total & & 100\% & \multicolumn{2}{c|}{3.20} & \multicolumn{2}{c|}{3.38} & \multicolumn{2}{c|}{3.67} \\ \hline
+M1/M6 & Tasa de éxito en pruebas funcionales y de misión & 17,54\% & 3 & 0,526 & 3 & 0,526 & 4 & 0,702 \\ \hline
+M2 & Disponibilidad de sensores & 8,77\% & 3 & 0,263 & 4 & 0,351 & 3 & 0,263 \\ \hline
+M3 & Latencia de adquisición & 8,77\% & 3 & 0,263 & 3 & 0,263 & 4 & 0,351 \\ \hline
+M4 & Error de trayectoria & 8,77\% & 3 & 0,263 & 3 & 0,263 & 3 & 0,263 \\ \hline
+M5 & Latencia de comunicación & 8,77\% & 3 & 0,263 & 3 & 0,263 & 5 & 0,439 \\ \hline
+M7 & Peso de componentes añadidos & 8,77\% & 3 & 0,263 & 3 & 0,263 & 3 & 0,263 \\ \hline
+M8 & Alcance de comunicación & 8,77\% & 5 & 0,439 & 5 & 0,439 & 5 & 0,439 \\ \hline
+M9 & Frecuencia de imágenes & 5,26\% & 3 & 0,158 & 3 & 0,158 & 4 & 0,211 \\ \hline
+M10 & Mecanismos de recuperación & 8,77\% & 3 & 0,263 & 4 & 0,351 & 3 & 0,263 \\ \hline
+M11 & Integración sin modificar casco y GM & 8,77\% & 3 & 0,263 & 3 & 0,263 & 3 & 0,263 \\ \hline
+M12 & Accesibilidad de conectores & 7,04\% & 3 & 0,211 & 3 & 0,211 & 3 & 0,211 \\ \hline
+Total & & 100\% & \multicolumn{2}{c|}{3,175} & \multicolumn{2}{c|}{3,351} & \multicolumn{2}{c|}{3,668} \\ \hline
 Lugar & & & \multicolumn{2}{c|}{3} & \multicolumn{2}{c|}{2} & \multicolumn{2}{c|}{1} \\ \hline
 ¿Continúa? & & & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{No} & \multicolumn{2}{c|}{Desarrollar} \\ \hline
 \end{longtable}
@@ -801,16 +810,16 @@ SF10 & Integrar y proteger la estructura del USV con hardware nuevo & Estructura
 \newpage
 
 \section{Pruebas y validación del sistema}
-
+\label{sec:pruebas}
+  
 Siguiendo la rama derecha del Modelo en V definida en la Sección 3.1.2, esta sección detalla
 las pruebas concretas planeadas para cada uno de sus tres niveles, trazando cada una a las
 métricas correspondientes de la Tabla \ref{tab:metricas} y, a través de estas, a las necesidades del cliente
 de la Tabla \ref{tab:necesidades}. Cuando varias métricas se verifican de forma natural durante la misma
 ejecución de prueba, se agrupan en una sola, en vez de repetir el montaje experimental.
 
-El entorno de simulación (Gazebo con ROS~2) se emplea únicamente como herramienta de apoyo durante 
-el desarrollo, para depurar algoritmos antes de su despliegue, por lo que ninguna métrica se 
-verifica en simulación.
+El Objetivo específico 1 no requiere pruebas, ya que su resultado es el diagnóstico de la plataforma 
+recogido en el Apéndice~\ref{ap:diagnostico}.
 
 \textbf{Cálculo del tamaño de muestra.} Las métricas expresadas como tasa o porcentaje
 (M1, M2, M3, M4, M5 y M6) se verifican estimando la proporción de observaciones que
@@ -853,22 +862,25 @@ Los parámetros adoptados son un nivel de confianza del 95\,\% ($Z = 1.96$), un 
  $e = 10\%$, y una proporción esperada $p$ igual al valor marginal de cada métrica
 en la Tabla \ref{tab:metricas}, de modo que la muestra permite verificar que el sistema alcanza, al menos,
 el desempeño mínimo exigido. Se adopta $e = 10\%$ y no el valor usual de 5\,\% debido a
-que las pruebas de campo tienen un costo y una disponibilidad de plataformas limitados; con
+que las pruebas de campo tienen un coste y una disponibilidad de plataformas limitados; con
 $e = 5\%$ los tamaños requeridos se duplicarían o más. Las métricas que se determinan por
 medición directa de un conjunto reducido de elementos (M7, M10, M11 y M12) se verifican por
 censo, y M9 y M8 se tratan como se indica en cada prueba.
 
 
 \subsection{Pruebas unitarias por subsistema}
+\label{subsec:pruebas_unitarias}
 
 Este nivel verifica que cada subsistema, de forma individual, cumple su función antes de
-integrarse con el resto del sistema.
+integrarse con el resto del sistema. Las Pruebas 1 a 3 verifican el Objetivo específico 2, centrado en la 
+integración del hardware embarcado y en la captura de datos en laboratorio, y la Prueba 4 verifica los mecanismos 
+de recuperación de la arquitectura de comunicaciones del Objetivo específico 3.
 
-\textbf{Prueba 1: Ciclo de arranque y respuesta a comandos (M1).} Esta prueba verifica
-que el autopiloto y el ordenador a bordo arrancan correctamente y responden a comandos
-básicos. Cada ciclo se compone del arranque del sistema, el establecimiento de comunicación
-autopiloto--ordenador a bordo (vía MAVROS) y el envío de un comando de prueba, y se registra
-su resultado binario (Éxito/Falla). \emph{Tamaño de muestra:} considerando cada ciclo como un
+\textbf{Prueba 1: Ciclo de arranque y respuesta a comandos (M1).} Esta prueba verifica que cada vehículo 
+arranca correctamente, se integra en el entorno ROS~2 del sistema y responde a comandos básicos. Cada ciclo 
+se compone del arranque del sistema, el establecimiento de la comunicación entre el autopiloto y ROS~2 y el 
+envío de un comando de prueba, y se registra su resultado binario (Éxito/Falla). \emph{Tamaño de muestra:} 
+considerando cada ciclo como un
 ensayo, con $p = 0.90$ y $q = 0.10$, la Ecuación~\eqref{eq:cochran} resulta en
 \begin{equation*}
   n_0 = \frac{1.96^2 \cdot 0.90 \cdot 0.10}{0.10^2} = 34.57 \approx 35 \text{ ciclos.}
@@ -884,7 +896,7 @@ establecido en la Tabla \ref{tab:metricas}. El criterio de aceptación es una ta
 \textbf{Prueba 2: Desempeño de sensores en misión continua (M2, M3, M9).} Esta prueba
 verifica, en una única misión continua de al menos 30 minutos en laboratorio, la
 disponibilidad de los sensores (porcentaje de tiempo con datos válidos sin interrupciones), la
-latencia de adquisición (tiempo entre captura física y disponibilidad en el pipeline ROS2) y
+latencia de adquisición (tiempo entre la captura física y su publicación en ROS~2) y
 la frecuencia de captura de imágenes (toma de tiempo de cada imagen).
 \emph{Tamaño de muestra:} a $\approx 1$~Hz, la misión genera una población finita de
 $N \approx 1800$ muestras. Para M2 y M3 se evalúa la proporción de muestras válidas y de
@@ -896,27 +908,33 @@ $n_0 = 34.57$ calculado en la Prueba 1 y se aplica la Ecuación~\eqref{eq:fpc}:
 Dado que $n\,q = 34 \cdot 0.10 = 3.4 < 5$, se aplica la Ecuación~\eqref{eq:min}, que arroja
 nuevamente $n = 50$ muestras. La misión de 30 minutos supera ampliamente este mínimo, por lo
 que la evaluación utiliza la totalidad de los registros. M9 se calcula a partir de las marcas
-de tiempo de todas las imágenes capturadas durante la misión (censo).
+de tiempo de todas las imágenes capturadas durante la misión (censo). El criterio de aceptación 
+es que al menos el 90~\% de las muestras sean válidas (M2) y presenten una latencia de adquisición 
+$\leq$500~ms (M3), y que la frecuencia media de captura sea de al menos 1~Hz (M9).
 
 \textbf{Prueba 3: Verificación física de componentes (M7, M12).} Esta prueba verifica, en
 una única inspección física previa y posterior a la integración, que el peso total del
 hardware nuevo no compromete el presupuesto de peso de la embarcación y que los conectores
 de los componentes nuevos permanecen accesibles sin desmontaje mayor.
-\emph{Tamaño de muestra:} censo; se pesa cada componente y se inspecciona el acceso a la
-totalidad de los conectores.
+\emph{Tamaño de muestra:} censo, donde se pesa cada componente y se inspecciona el acceso a la
+totalidad de los conectores. El criterio de aceptación es una masa añadida $\leq$5~kg por vehículo (M7) 
+y el acceso a la totalidad de los conectores sin desmontaje mayor (M12).
 
-\textbf{Prueba 4: Conmutación de mecanismos de recuperación (M10).} Esta prueba verifica
-que el sistema cuenta con múltiples canales redundantes de recuperación ante fallos y que
-estos conmutan correctamente. Se desconecta intencionalmente cada canal de comunicación o
-control de forma individual (radiofrecuencia, red local, posicionamiento) mientras el sistema
-opera, confirmando la activación del mecanismo de conmutación (failover) correspondiente.
-\emph{Tamaño de muestra:} censo de todos los canales de recuperación del sistema.
+\textbf{Prueba 4: Mecanismos de recuperación ante fallos (M10).} Esta prueba verifica que el sistema 
+cuenta con múltiples mecanismos redundantes de recuperación ante fallos y que cada uno actúa correctamente. 
+Mientras el sistema opera, se provoca de forma individual la pérdida de cada canal de comunicación o de control 
+(red local, radiofrecuencia y posicionamiento) y se confirma que la supervisión y el control del vehículo se mantienen 
+a través de los canales restantes o que el autopiloto ejecuta la acción de seguridad correspondiente. 
+\textit{Tamaño de muestra:} censo de todos los mecanismos de recuperación del sistema. El criterio de aceptación 
+es que al menos tres mecanismos de recuperación actúen correctamente.
 
 \subsection{Pruebas de integración entre módulos}
+\label{subsec:pruebas_integracion}
 
 Este nivel verifica el comportamiento del USV como sistema integrado, una vez combinados
-sus subsistemas. Constituye la verificación directa del Objetivo específico 3. La métrica M5
-(latencia de comunicación) se verifica en conjunto con M4 dentro de la Prueba 1 de la
+sus subsistemas. La Prueba 1 verifica el alcance de la arquitectura de comunicaciones del 
+Objetivo específico 3, y la Prueba 2, la integración física del hardware embarcado del Objetivo específico 2. 
+La métrica M5 (latencia de comunicación) se verifica en conjunto con M4 dentro de la Prueba 1 de la
 Sección 3.4.3, al compartir la misma misión de coordinación por waypoints; no se repite aquí
 como prueba independiente.
 
@@ -926,7 +944,7 @@ incrementando progresivamente la distancia hasta observar pérdida de enlace.
 \emph{Tamaño de muestra:} M8 es una magnitud continua y no una proporción, por lo que no se
 aplica el cálculo anterior. Debido al costo de las pruebas de campo, se realizan tres
 recorridos de distancia creciente y se reporta el alcance mínimo observado como estimación
-conservadora.
+conservadora. El criterio de aceptación es un alcance mínimo observado de al menos 100~m.
 
 \textbf{Prueba 2: Modificación del casco y estabilidad (M11).} Esta prueba verifica que la
 integración del hardware nuevo no compromete la integridad estructural ni la estabilidad de
@@ -939,6 +957,7 @@ inspección completa y un cálculo de GM por condición de carga (cargado y vac�
 \newpage
 
 \subsection{Validación del sistema completo}
+\label{subsec:pruebas_sistema}
 
 Este nivel valida el desempeño cooperativo de la flota multi-USV contra los requisitos
 originales del cliente. Constituye la verificación directa del Objetivo específico 4.
@@ -946,8 +965,10 @@ originales del cliente. Constituye la verificación directa del Objetivo especí
 \textbf{Prueba 1: Navegación cooperativa por waypoints (M4, M5).} Esta prueba valida, 
 en una misma misión de al menos 20 minutos con dos USV ejecutando waypoints de forma simultánea 
 en un entorno acuático real, tanto la precisión de navegación como la latencia de comunicación de 
-coordinación. Se registran la trayectoria planeada frente a la real y la latencia de los mensajes 
-de coordinación entre la estación base y cada USV, estimada como la mitad del tiempo de ida y 
+coordinación. Se registran la trayectoria planificada y la recorrida por cada USV, y el error de trayectoria 
+se calcula como el error transversal de la Ecuación~\ref{eq:error_transversal} a partir de la posición estimada 
+por su autopiloto. Se registra además la latencia de los mensajes de coordinación entre la estación base y 
+cada USV, estimada como la mitad del tiempo de ida y 
 vuelta para no depender de la sincronización de relojes entre equipos, en los logs de misión y 
 en el reporte técnico de comunicaciones y navegación.
 \emph{Tamaño de muestra:} se evalúa la proporción de mediciones de posición con error
@@ -958,7 +979,9 @@ una misión de 20 minutos a 1~Hz ($N \approx 1200$), la Ecuación~\eqref{eq:fpc}
 \end{equation*}
 Como $n\,q = 3.4 < 5$, se aplica nuevamente la Ecuación~\eqref{eq:min}, por lo que el mínimo
 es $n = 50$ muestras por métrica y por USV. Cada misión registra más de 1200 muestras por
-USV, por lo que se utiliza la totalidad de los registros.
+USV, por lo que se utiliza la totalidad de los registros. El criterio de aceptación es que, para 
+cada USV, al menos el 90~\% de las mediciones de posición presenten un error transversal $\leq$2~m (M4) y 
+al menos el 90~\% de los mensajes de coordinación una latencia $\leq$1~s (M5).
 
 \textbf{Prueba 2: Tasa de éxito de misión (M6).} Esta prueba valida que el sistema completo 
 cumple exitosamente misiones de coordinación multi-USV de principio a fin, con al menos 5 
@@ -973,7 +996,8 @@ cada misión con dos USV y cinco puntos por USV aporta diez ensayos, el número 
 \[
 n_{\text{misiones}} = \left\lceil \frac{49}{2 \cdot 5} \right\rceil = 5 \text{ misiones (50 ensayos)},
 \]
-que se ejecutan en su totalidad en un entorno acuático real.
+que se ejecutan en su totalidad en un entorno acuático real. El criterio de aceptación es que al menos 
+el 85~\% de los puntos de muestreo se alcancen.
 
 \newpage
 
@@ -994,7 +1018,7 @@ Ciclo de arranque y comandos & M1 & 50 ciclos (25 por vehículo) \\ \hline
 Sensores en misión continua & M2, M3 & 50 muestras de $\approx 1800$ (se usan todas) \\ \hline
  & M9 & Censo de las imágenes de la misión \\ \hline
 Verificación física & M7, M12 & Censo de componentes y conectores \\ \hline
-Mecanismos de recuperación & M10 & Censo de canales \\ \hline
+Mecanismos de recuperación & M10 & Censo de mecanismos \\ \hline
 Alcance de comunicación & M8 & 3 recorridos; se reporta el mínimo \\ \hline
 Casco y estabilidad & M11 & Censo; 1 por condición de carga \\ \hline
 Navegación cooperativa & M4, M5 & 50 muestras por métrica y USV (se usan todas) \\ \hline

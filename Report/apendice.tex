@@ -1,4 +1,5 @@
 \chapter{Preguntas realizadas al cliente}
+\label{ap:entrevista}
  
 En este apéndice se presenta la guía de entrevista utilizada para el levantamiento de las 
 necesidades del cliente (equipo del grupo de investigación MACS, Universidad de Sevilla). 
@@ -28,3 +29,93 @@ necesidades primarias y secundarias del sistema.
     \item Una vez finalizado este proyecto, ¿cómo se imaginan que el grupo seguiría usando o ampliando el sistema?
 \end{enumerate}
 
+\newpage
+
+% =====================================================================
+% Apéndice B — Entregable 1: Diagnóstico inicial de la plataforma USV
+% Mantén tu propia línea \chapter{...} del apéndice si ya la tienes.
+% Etiquetas marcadas con % AJUSTAR -> cambiar por las tuyas.
+% Figuras: fig/usv_inicial1.jpeg, fig/usv_inicial2.jpeg y figuras/arquitectura_inicial (ajusta la ruta).
+% =====================================================================
+\chapter{Entregable 1: Diagnóstico inicial de la plataforma USV}
+\label{ap:diagnostico}
+
+Este apéndice constituye el informe de diagnóstico del primer objetivo específico. Recoge el estado de la plataforma del grupo MACS al inicio del proyecto, en septiembre de 2026, presenta la arquitectura que el grupo planteó entonces como punto de llegada y determina qué subsistemas cumplen ya lo que exige el sistema multi-USV y cuáles deben incorporarse o desarrollarse. El diagnóstico se basa en la documentación técnica y en los resultados de los ensayos facilitados por el grupo y por los asesores del proyecto, ya que, al inicio del proyecto, la operación de las plataformas en exteriores estaba pendiente de los permisos correspondientes. Junto con el levantamiento de necesidades y métricas del Capítulo~\ref{cap:metodologia}, este diagnóstico define los requisitos del sistema multi-USV. % AJUSTAR
+
+% ---------------------------------------------------------------------
+\section{Estado de la plataforma en septiembre de 2026}
+\label{sec:estado_inicial}
+
+Al inicio del proyecto, el grupo dispone de un único USV operativo, construido sobre la embarcación Invader cuya automatización se describe en la Sección~\ref{subsec:invader}. Sobre esa base, el grupo completa la integración física del vehículo, mejora su protección frente a las salpicaduras, incorpora la medición del consumo de la propulsión y caracteriza su comportamiento mediante una campaña de ensayos en exteriores. La Figura~\ref{fig:usv_inicial} muestra el vehículo en este estado.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.75\textwidth]{fig/usv_inicial1.jpeg}
+\caption{USV del grupo MACS en septiembre de 2026, al inicio del proyecto.}
+\label{fig:usv_inicial}
+\end{figure}
+
+La plataforma conserva el casco de tipo catamarán y la propulsión diferencial original. Con sus tres baterías, la masa del vehículo es de unos 6,2~kg. En una prueba de lastre, el grupo ensayó una masa total de 14~kg, a partir de la cual recomienda mantener el conjunto en torno a 10--12~kg. En avance, el vehículo alcanza velocidades sostenidas de 1,2 a 1,3~m/s, con una saturación práctica de la propulsión por encima del 90~\% del mando, y puede girar prácticamente sobre su propio eje. La electrónica se aloja en el compartimento central del casco, cuyo interior muestra la Figura~\ref{fig:usv_interior}, y se protege con piezas impresas en 3D y una cubierta adicional; un conector USB accesible permite configurar el autopiloto y descargar sus registros sin desmontar la protección.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.55\textwidth]{fig/usv_inicial2.jpeg}
+\caption{Compartimento central del USV inicial, con la protección de la electrónica.}
+\label{fig:usv_interior}
+\end{figure}
+
+El control recae en un autopiloto Pixhawk 6X con ArduPilot Rover, configurado como embarcación de superficie, con los modos Manual y Auto seleccionables desde la emisora de radiocontrol. En los ensayos del grupo, el vehículo completa dos misiones autónomas de más de veinte waypoints, con errores transversales próximos a cero en los tramos rectos y picos de unos 2,5~m en los cambios de dirección. Ambas misiones duran menos de tres minutos, y su preparación exige recalibrar el magnetómetro. Además, la velocidad de crucero configurada, de 2~m/s, supera la velocidad sostenida que el vehículo alcanza en la práctica.
+
+La alimentación se divide en dos circuitos: una batería independiente alimenta el autopiloto y sus periféricos a través del módulo de potencia, y dos baterías conectadas en paralelo alimentan la propulsión. Un medidor de potencia por I2C registra la tensión y la corriente de una sola de las ramas de propulsión, por lo que el consumo total se estima suponiendo un reparto equilibrado entre ambas. El vehículo no dispone de alimentación para equipos adicionales.
+
+La comunicación con la estación de tierra se realiza mediante una pareja de radiomódems RFD900x en la banda de 868~MHz, conectados al puerto TELEM1 y gestionados desde Mission Planner, cuyo alcance no se ha caracterizado. Todos los datos del vehículo quedan registrados en la tarjeta microSD del autopiloto y se descargan al terminar cada ensayo. No existe ordenador a bordo, red local inalámbrica, sensor de percepción ni integración con ROS~2.
+
+Por último, la configuración del autopiloto mantiene desactivadas la acción de seguridad ante la pérdida del radiocontrol, las comprobaciones previas al armado, el pulsador de seguridad y las acciones automáticas ante batería baja de la propulsión. Esta configuración resulta adecuada para la puesta a punto bajo supervisión directa, pero deja al vehículo sin ningún mecanismo automático de recuperación ante fallos.
+
+% ---------------------------------------------------------------------
+\section{Arquitectura planteada al inicio del proyecto}
+\label{sec:arquitectura_inicial}
+
+Junto al estado de la plataforma, el grupo planteó al inicio del proyecto una arquitectura objetivo para cada vehículo, representada en la Figura~\ref{fig:arquitectura_inicial}. En ella, cada USV incorpora un ordenador a bordo, una Raspberry Pi o una Jetson Nano, conectado al autopiloto mediante un cable serie FTDI y, a través de un conmutador, al radio Bullet AC, alimentado por PoE, y a un sensor de percepción, ya sea un LiDAR 3D o una cámara. La estación base reúne el radio Rocket, el router, la emisora de radiocontrol y tres portátiles, uno de ellos conectado al enlace de telemetría.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.8\textwidth]{fig/arquitectura_inicial.png}
+\caption{Arquitectura de cada USV y de la estación base planteada por el grupo al inicio del proyecto.}
+\label{fig:arquitectura_inicial}
+\end{figure}
+
+\FloatBarrier
+
+La propuesta se acompaña de un reparto de la alimentación de la carga útil, que divide una batería LiPo 6S de 4500~mAh, con un límite de descarga de 5~A, en tres ramas: el radio Bullet AC, con 10~W asignados; un regulador DC-DC para el ordenador a bordo, con 100~W, y el módulo de potencia del autopiloto, con 15~W.
+
+Este planteamiento presenta dos aspectos que el diseño posterior revisa. El primero es que el balance de potencia no se cierra. La rama del regulador alimenta a la vez una Jetson Orin Nano y una Raspberry Pi~5 con su controlador, que suman unos 145~W, por encima de los 100~W asignados, y la suma de las tres asignaciones, 125~W, supera ya los cerca de 111~W que permite el límite de 5~A de la batería. Además, los 79,8~W asignados a la Jetson corresponden a su fuente de alimentación externa y no a su consumo máximo, de 25~W. El segundo es que la arquitectura replica en cada vehículo el ordenador a bordo y el sensor de percepción. Durante las semanas siguientes, esta propuesta evoluciona hacia la flota heterogénea descrita en el Capítulo~\ref{cap:diseno}, que prescinde de la Raspberry Pi y del conmutador, concentra la percepción en el USV1, reduce la estación base a un único ordenador y dimensiona de nuevo la alimentación de la carga útil (Sección~\ref{sec:hardware_embarcado}). % AJUSTAR
+
+% ---------------------------------------------------------------------
+\section{Evaluación de los subsistemas}
+\label{sec:evaluacion_subsistemas}
+
+La Tabla~\ref{tab:diagnostico} resume el estado inicial de cada subsistema de la plataforma y de las dos capacidades que dependen del conjunto, la recuperación ante fallos y la coordinación de la flota. Un elemento se considera conforme cuando su función existe en la plataforma, se ha demostrado en los ensayos documentados por el grupo y responde a lo que exige el sistema multi-USV.
+
+\begin{table}[!htb]
+\centering
+\caption{Diagnóstico de la plataforma en septiembre de 2026.}
+\label{tab:diagnostico}
+\small
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{4.2cm}|>{\raggedright\arraybackslash}X|>{\centering\arraybackslash}p{1.8cm}|}
+\hline
+\textbf{Subsistema} & \textbf{Estado inicial} & \textbf{Resultado} \\ \hline
+Control y navegación & Autopiloto con modos Manual y Auto; misiones por waypoints completadas & Cumple \\ \hline
+Procesamiento a bordo & Sin ordenador a bordo ni ROS~2 & No cumple \\ \hline
+Percepción & Sin cámara ni LiDAR & No cumple \\ \hline
+Registro de datos & Solo registro interno del autopiloto, descargado tras cada ensayo & No cumple \\ \hline
+Medición del consumo & Una sola rama de la propulsión medida & No cumple \\ \hline
+Alimentación de la carga útil & Sin alimentación para equipos adicionales & No cumple \\ \hline
+Enlace por radiofrecuencia & Pareja RFD900x operativa en un vehículo & Cumple \\ \hline
+Red local inalámbrica & Inexistente & No cumple \\ \hline
+Propulsión & Propulsión diferencial caracterizada & Cumple \\ \hline
+Estructura & Casco protegido, con margen de masa y conectores accesibles & Cumple \\ \hline
+Recuperación ante fallos & Ningún mecanismo automático activo & No cumple \\ \hline
+Coordinación de la flota & Un único vehículo & No cumple \\ \hline
+\end{tabularx}
+\end{table}

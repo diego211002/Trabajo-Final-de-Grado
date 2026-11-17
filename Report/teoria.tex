@@ -16,7 +16,7 @@ sistemas multi-USV.
  
 % ---------------------------------------------------------------------
 \subsection{Automatización de la plataforma Invader en la Universidad de Sevilla}
-\label{subsec:trabajo_previo_invader}
+\label{subsec:invader}
  
 Iniesta Fernández~\cite{iniesta2025} abordó en su Trabajo Fin de Máster la
 automatización de una embarcación Invader Lipo 30000\,mAh, un barco cebador comercial
@@ -162,6 +162,14 @@ correspondiente de este capítulo.
     menos tiempo, repartir tareas entre vehículos y aportar redundancia frente al fallo
     de uno de ellos, a costa de requerir mecanismos de comunicación y coordinación entre
     los vehículos~\cite{dunbabin2012}.
+
+  \item[Esquema líder--seguidor:] estrategia de coordinación de varios vehículos en la que uno 
+  de ellos, el líder, sigue la trayectoria de referencia, mientras que los demás, los seguidores, 
+  regulan su movimiento en función del estado del líder, por ejemplo manteniendo una separación 
+  respecto a él \cite{desai2001}. Su principal ventaja es la sencillez, ya que reduce la coordinación
+   a la relación de cada seguidor con el líder, y su principal inconveniente es la dependencia de este, 
+   cuyo fallo afecta a toda la formación \cite{desai2001}. Permite además repartir roles en flotas 
+   heterogéneas, en las que cada vehículo dispone de capacidades distintas \cite{manjanna2018}.
  
   \item[Autopiloto:] controlador embebido que ejecuta, sobre un sistema operativo de
     tiempo real, las tareas de bajo nivel de un vehículo no tripulado: la lectura de sus
@@ -201,6 +209,13 @@ correspondiente de este capítulo.
     tratarse de placas compactas basadas en arquitectura ARM con sistema operativo
     Linux; las de mayor capacidad incorporan además un procesador gráfico (GPU) que
     acelera las tareas de visión y de aprendizaje automático~\cite{kumar2025} \cite{aliane2026}.
+
+  \item[Detección de objetos por visión:] tarea de visión artificial que localiza en una imagen los 
+  objetos de interés, delimitándolos mediante un rectángulo y asignándoles una clase y un nivel de 
+  confianza. Los detectores de una sola etapa de la familia YOLO (\textit{You Only Look Once}) resuelven 
+  la localización y la clasificación en una única pasada de una red neuronal convolucional, lo que les 
+  permite operar en tiempo real \cite{redmon2016}, también sobre ordenadores a bordo con procesador 
+  gráfico \cite{kumar2025}.
  
   \item[Estación de control en tierra (GCS):] equipo y aplicación desde los cuales el
     operador configura el vehículo, planifica las misiones, supervisa su estado en
@@ -451,16 +466,17 @@ el prefijo de su espacio de nombres.
  
 % ---------------------------------------------------------------------
 \subsection{Integración con el autopiloto: MAVLink y MAVROS}
-\label{subsec:mavros}
+\label{subsec:mavlink_mavros}
  
 El firmware de un autopiloto organiza el comportamiento del vehículo en modos de
 operación, que determinan quién lo gobierna y con qué referencia. Los más habituales en
 vehículos de superficie son los siguientes: en el modo \textit{Manual}, el operador controla directamente los propulsores
-desde la emisora de radiocontrol~\cite{iniesta2025}; en \textit{Auto}, el vehículo
-ejecuta una ruta de waypoints previamente cargada; en \textit{Guided}, acepta consignas
+desde la emisora de radiocontrol~\cite{iniesta2025}, en \textit{Auto}, el vehículo
+ejecuta una ruta de waypoints previamente cargada, en \textit{Guided}, acepta consignas
 de velocidad, rumbo o posición enviadas en tiempo real por un sistema externo, como un
-ordenador a bordo; en \textit{Loiter}, mantiene su posición y rumbo frente a la
-corriente o el viento; y en \textit{RTL}, regresa de forma autónoma al punto de partida,
+ordenador a bordo, en \textit{Loiter}, mantiene su posición y rumbo frente a la
+corriente o el viento, en \textit{Hold}, detiene los propulsores y mantiene el vehículo parado 
+y en \textit{RTL}, regresa de forma autónoma al punto de partida,
 por ejemplo ante una batería baja~\cite{kumar2025}.
  
 La comunicación entre el autopiloto, la estación de control y el ordenador a bordo se
@@ -479,6 +495,17 @@ arquitectura en un USV: un nodo del ordenador a bordo publica consignas en disti
 tópicos, según la estrategia de control deseada, y los nodos suscritos las envían al
 autopiloto mediante MAVLink, que genera las señales PWM de los dos
 propulsores~\cite{kumar2025}.
+
+Las versiones recientes de ArduPilot ofrecen, además, una interfaz DDS nativa, que publica 
+el estado del vehículo directamente como tópicos de ROS~2 y ofrece servicios para operaciones 
+como el cambio de modo o el armado, sin necesidad de un puente intermedio. Como el autopiloto es un 
+microcontrolador con recursos limitados, esta interfaz se basa en micro-ROS, la variante de ROS~2 
+para sistemas embebidos, que emplea el protocolo XRCE-DDS: el autopiloto actúa como un cliente ligero, 
+y un agente que se ejecuta en el ordenador a bordo, conectado por un enlace serie, lo representa ante el 
+resto del grafo de ROS~2 \cite{albatati2026}. Frente a MAVROS, esta vía elimina 
+la traducción entre MAVLink y ROS~2, aunque la diferencia de latencia entre ambas es del orden de 
+cientos de microsegundos \cite{Cite12}, por lo que la elección entre ellas depende más de la 
+arquitectura del sistema que de su desempeño.
 
 \begin{figure}[htbp]
   \centering
@@ -586,7 +613,7 @@ fallo de la misión~\cite{kumar2025} o una pérdida de calidad de la estimación
 posición, que el autopiloto supervisa de forma continua a partir de las lecturas del
 receptor GNSS~\cite{kumar2025} \cite{aliane2026}.
 La acción más habitual es el retorno autónomo al punto de partida mediante el modo
-\textit{RTL}, descrito en la Sección~\ref{subsec:mavros}, aunque también puede optarse
+\textit{RTL}, descrito en la Sección~\ref{subsec:mavlink_mavros}, aunque también puede optarse
 por mantener la posición del vehículo mediante el modo \textit{Loiter}~\cite{kumar2025}. Estos mecanismos pueden
 complementarse desde el ordenador a bordo, que supervisa condiciones adicionales, como
 la velocidad del viento o el estado de la batería, y envía al autopiloto la orden de
